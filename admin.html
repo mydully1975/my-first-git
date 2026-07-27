@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>견적서비스 - 관리자 페이지</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            font-size: 12px;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+        
+        .nav {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .nav-items {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .nav-item {
+            padding: 5px 10px;
+            background: white;
+            border: 1px solid #667eea;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #667eea;
+            font-size: 0.75em;
+        }
+        
+        .nav-item:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .nav-item.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .content {
+            padding: 15px;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .page-title {
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.8em;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 5px 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        .stat-card h3 {
+            font-size: 0.7em;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+        
+        .stat-card .value {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+        }
+        
+        .table-header {
+            background: #f8f9fa;
+            padding: 10px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .table-title {
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.75em;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.7em;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .status-badge {
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.6em;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .status-approved {
+            background: #28a745;
+            color: white;
+        }
+        
+        .status-rejected {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .status-completed {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .visibility-badge {
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.6em;
+            font-weight: 500;
+        }
+        
+        .visibility-public {
+            background: #28a745;
+            color: white;
+        }
+        
+        .visibility-private {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 250px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .modal-title {
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .modal-close:hover {
+            color: #333;
+        }
+        
+        .detail-modal {
+            max-width: 400px;
+        }
+        
+        .detail-content {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 8px 0;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+            width: 60px;
+            font-size: 0.75em;
+        }
+        
+        .detail-value {
+            color: #333;
+            flex: 1;
+            font-size: 0.75em;
+        }
+        
+        .detail-section {
+            margin: 10px 0;
+        }
+        
+        .detail-section-title {
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #667eea;
+        }
+        
+        .clickable-row {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .clickable-row:hover {
+            background-color: #e9ecef;
+        }
+        
+        .form-group {
+            margin-bottom: 10px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+            color: #333;
+            font-size: 0.8em;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+        
+        .form-group textarea {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 0.8em;
+            min-height: 50px;
+            resize: vertical;
+        }
+        
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .photo-item {
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .photo-item img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+        
+        .photo-item .photo-desc {
+            padding: 5px;
+            font-size: 0.7em;
+            color: #333;
+            background: #f8f9fa;
+        }
+        
+        .customer-link {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: #28a745;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 0.7em;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        
+        .customer-link:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👨‍💼 견적서비스 - 관리자 페이지</h1>
+            <p>전체 관리 및 모니터링</p>
+        </div>
+        
+        <div class="nav">
+            <div class="nav-items">
+                <div class="nav-item active" onclick="showPage('admin')">📊 대시보드</div>
+                <div class="nav-item" onclick="showPage('public-quotes')">🌐 공개 견적</div>
+                <div class="nav-item" onclick="showPage('all-quotes')">📋 전체 견적</div>
+                <div class="nav-item" onclick="showPage('create-contract')">📝 계약 생성</div>
+                <div class="nav-item" onclick="showPage('all-contracts')">📄 전체 계약</div>
+                <div class="nav-item" onclick="showPage('all-reviews')">⭐ 전체 후기</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- 관리자 대시보드 페이지 -->
+            <div id="admin" class="page active">
+                <h2 class="page-title">📊 관리자 대시보드</h2>
+                
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <h3>총 견적 요청</h3>
+                        <div class="value" id="totalRequests">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>대기 중</h3>
+                        <div class="value" id="pendingRequests">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>진행 중 계약</h3>
+                        <div class="value" id="activeContracts">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>총 매출</h3>
+                        <div class="value" id="totalRevenue">₩0</div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">견적 요청 목록</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>고객명</th>
+                                <th>카테고리</th>
+                                <th>공개</th>
+                                <th>예산</th>
+                                <th>상태</th>
+                                <th>계약</th>
+                                <th>작업</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quoteRequestsTable">
+                            <!-- 데이터가 여기에 로드됩니다 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 공개 견적 페이지 -->
+            <div id="public-quotes" class="page">
+                <h2 class="page-title">🌐 공개 견적</h2>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">공개 견적 목록</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>카테고리</th>
+                                <th>설명</th>
+                                <th>예산</th>
+                                <th>상태</th>
+                                <th>상세보기</th>
+                            </tr>
+                        </thead>
+                        <tbody id="publicQuotesTable">
+                            <!-- 데이터가 여기에 로드됩니다 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 전체 견적 페이지 -->
+            <div id="all-quotes" class="page">
+                <h2 class="page-title">📋 전체 견적</h2>
+                
+                <div class="form-group">
+                    <label>필터</label>
+                    <select id="quoteFilter" onchange="filterQuotes()">
+                        <option value="all">전체</option>
+                        <option value="pending">대기</option>
+                        <option value="approved">승인</option>
+                        <option value="rejected">거절</option>
+                        <option value="completed">완료</option>
+                    </select>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">전체 견적 목록</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>고객명</th>
+                                <th>카테고리</th>
+                                <th>공개</th>
+                                <th>예산</th>
+                                <th>상태</th>
+                                <th>작업</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allQuotesTable">
+                            <!-- 데이터가 여기에 로드됩니다 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 전체 계약 페이지 -->
+            <div id="all-contracts" class="page">
+                <h2 class="page-title">📄 전체 계약</h2>
+                
+                <div class="form-group">
+                    <label>필터</label>
+                    <select id="contractFilter" onchange="filterContracts()">
+                        <option value="all">전체</option>
+                        <option value="active">진행 중</option>
+                        <option value="completed">완료</option>
+                        <option value="pending">대기</option>
+                    </select>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">전체 계약 목록</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>계약 ID</th>
+                                <th>고객명</th>
+                                <th>프로젝트</th>
+                                <th>시작일</th>
+                                <th>종료일</th>
+                                <th>금액</th>
+                                <th>상태</th>
+                                <th>작업</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allContractsTable">
+                            <!-- 데이터가 여기에 로드됩니다 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 계약 생성 페이지 -->
+            <div id="create-contract" class="page">
+                <h2 class="page-title">📄 계약 생성</h2>
+                
+                <div class="form-group">
+                    <label>견적 ID 선택</label>
+                    <select id="contractQuoteId">
+                        <option value="">견적 선택</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>시작일</label>
+                    <input type="date" id="contractStartDate">
+                </div>
+                
+                <div class="form-group">
+                    <label>종료일</label>
+                    <input type="date" id="contractEndDate">
+                </div>
+                
+                <div class="form-group">
+                    <label>계약 금액</label>
+                    <input type="number" id="contractAmount" placeholder="계약 금액 입력">
+                </div>
+                
+                <div class="form-group">
+                    <label>계약 상태</label>
+                    <select id="contractStatus">
+                        <option value="pending">대기</option>
+                        <option value="active">진행 중</option>
+                        <option value="completed">완료</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>특이사항</label>
+                    <textarea id="contractNotes" placeholder="계약 특이사항 입력"></textarea>
+                </div>
+                
+                <button class="btn btn-primary" onclick="createContract()">계약 생성</button>
+            </div>
+            
+            <!-- 전체 후기 페이지 -->
+            <div id="all-reviews" class="page">
+                <h2 class="page-title">⭐ 전체 후기</h2>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">전체 후기 목록</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>고객명</th>
+                                <th>프로젝트</th>
+                                <th>평점</th>
+                                <th>후기 내용</th>
+                                <th>사진</th>
+                                <th>작성일</th>
+                                <th>작업</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allReviewsTable">
+                            <!-- 데이터가 여기에 로드됩니다 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 고객 페이지 링크 -->
+    <a href="customer.html" class="customer-link">🏠 고객 페이지</a>
+    
+    <!-- 상세 보기 모달 -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content detail-modal">
+            <div class="modal-header">
+                <div class="modal-title" id="detailModalTitle">상세 정보</div>
+                <button class="modal-close" onclick="closeDetailModal()">×</button>
+            </div>
+            <div class="modal-body" id="detailModalBody">
+                <!-- 상세 내용이 여기에 로드됩니다 -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let isAdmin = true;
+        
+        // 로컬 스토리지 데이터베이스 초기화
+        function initDatabase() {
+            if (!localStorage.getItem('quoteRequests')) {
+                const initialData = [
+                    { id: 1, customerName: '김철수', customerEmail: 'kim@example.com', category: '인테리어', description: '사무실 인테리어 시공', budget: 5000000, deadline: '2024-02-28', status: 'pending', visibility: 'public', accessPassword: null, createdAt: new Date().toISOString() },
+                    { id: 2, customerName: '이영희', customerEmail: 'lee@example.com', category: '웹 개발', description: '쇼핑몰 웹사이트 제작', budget: 3200000, deadline: '2024-02-15', status: 'approved', visibility: 'private', accessPassword: '1234', createdAt: new Date().toISOString() },
+                    { id: 3, customerName: '박민수', customerEmail: 'park@example.com', category: '앱 개발', description: '배달 앱 개발', budget: 8500000, deadline: '2024-03-15', status: 'completed', visibility: 'public', accessPassword: null, createdAt: new Date().toISOString() },
+                    { id: 4, customerName: '정수진', customerEmail: 'jung@example.com', category: '마케팅', description: 'SNS 마케팅 캠페인', budget: 2000000, deadline: '2024-01-30', status: 'approved', visibility: 'public', accessPassword: null, createdAt: new Date().toISOString() }
+                ];
+                localStorage.setItem('quoteRequests', JSON.stringify(initialData));
+            }
+            
+            if (!localStorage.getItem('quotes')) {
+                const initialQuotes = [
+                    { id: 1, quoteRequestId: 1, price: 4800000, description: '인테리어 시공 견적', status: 'pending' },
+                    { id: 2, quoteRequestId: 2, price: 3200000, description: '웹사이트 제작 견적', status: 'approved' },
+                    { id: 3, quoteRequestId: 3, price: 8500000, description: '앱 개발 견적', status: 'completed' },
+                    { id: 4, quoteRequestId: 4, price: 1800000, description: '마케팅 캠페인 견적', status: 'approved' }
+                ];
+                localStorage.setItem('quotes', JSON.stringify(initialQuotes));
+            }
+            
+            if (!localStorage.getItem('contracts')) {
+                const initialContracts = [
+                    { id: 1, quoteId: 2, startDate: '2024-01-18', endDate: '2024-02-15', amount: 3200000, status: 'completed', createdAt: new Date().toISOString() },
+                    { id: 2, quoteId: 3, startDate: '2024-01-20', endDate: '2024-03-15', amount: 8500000, status: 'completed', createdAt: new Date().toISOString() },
+                    { id: 3, quoteId: 4, startDate: '2024-01-25', endDate: '2024-01-30', amount: 1800000, status: 'active', createdAt: new Date().toISOString() }
+                ];
+                localStorage.setItem('contracts', JSON.stringify(initialContracts));
+            }
+            
+            if (!localStorage.getItem('reviews')) {
+                const initialReviews = [
+                    { id: 1, contractId: 1, rating: 5, comment: '매우 만족스럽습니다. 전문성이 뛰어나고 일정을 잘 지켰습니다.', photos: [], createdAt: new Date().toISOString() },
+                    { id: 2, contractId: 2, rating: 4, comment: '전반적으로 좋았으나, 일부 디자인 수정이 필요했습니다.', photos: [], createdAt: new Date().toISOString() }
+                ];
+                localStorage.setItem('reviews', JSON.stringify(initialReviews));
+            }
+            
+            // 데이터 일치성 확인 및 수정
+            ensureDataConsistency();
+        }
+        
+        // 데이터 일치성 확인 및 수정
+        function ensureDataConsistency() {
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            const contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+            const reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+            
+            let hasChanges = false;
+            
+            // 계약 완료 시 관련 견적과 견적 요청도 완료로 변경
+            contracts.forEach(contract => {
+                if (contract.status === 'completed') {
+                    const quote = quotes.find(q => q.id === contract.quoteId);
+                    if (quote && quote.status !== 'completed') {
+                        quote.status = 'completed';
+                        hasChanges = true;
+                        
+                        const request = quoteRequests.find(q => q.id === quote.quoteRequestId);
+                        if (request && request.status !== 'completed') {
+                            request.status = 'completed';
+                        }
+                    }
+                }
+            });
+            
+            // 견적 완료 시 관련 견적 요청도 완료로 변경
+            quotes.forEach(quote => {
+                if (quote.status === 'completed') {
+                    const request = quoteRequests.find(q => q.id === quote.quoteRequestId);
+                    if (request && request.status !== 'completed') {
+                        request.status = 'completed';
+                        hasChanges = true;
+                    }
+                }
+            });
+            
+            // 변경된 데이터 저장
+            if (hasChanges) {
+                localStorage.setItem('quoteRequests', JSON.stringify(quoteRequests));
+                localStorage.setItem('quotes', JSON.stringify(quotes));
+                localStorage.setItem('contracts', JSON.stringify(contracts));
+            }
+            
+            return { quoteRequests, quotes, contracts, reviews };
+        }
+        
+        // 페이지 표시
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.getElementById(pageId).classList.add('active');
+            event.target.classList.add('active');
+            
+            // 페이지별 데이터 로드
+            if (pageId === 'admin') {
+                loadAdminDashboard();
+            } else if (pageId === 'public-quotes') {
+                loadPublicQuotes();
+            } else if (pageId === 'all-quotes') {
+                loadAllQuotes();
+            } else if (pageId === 'create-contract') {
+                loadContractQuotes();
+            } else if (pageId === 'all-contracts') {
+                loadAllContracts();
+            } else if (pageId === 'all-reviews') {
+                loadAllReviews();
+            }
+        }
+        
+        // 관리자 대시보드 로드
+        function loadAdminDashboard() {
+            const { quoteRequests, quotes, contracts } = ensureDataConsistency();
+            
+            // 통계 업데이트
+            document.getElementById('totalRequests').textContent = quoteRequests.length;
+            document.getElementById('pendingRequests').textContent = quoteRequests.filter(q => q.status === 'pending').length;
+            document.getElementById('activeContracts').textContent = contracts.filter(c => c.status === 'active').length;
+            
+            const totalRevenue = contracts
+                .filter(c => c.status === 'completed')
+                .reduce((sum, c) => sum + c.amount, 0);
+            document.getElementById('totalRevenue').textContent = '₩' + totalRevenue.toLocaleString();
+            
+            // 테이블 업데이트
+            const tableBody = document.getElementById('quoteRequestsTable');
+            tableBody.innerHTML = '';
+            
+            quoteRequests.forEach(request => {
+                const relatedQuote = quotes.find(q => q.quoteRequestId === request.id);
+                const relatedContract = relatedQuote ? contracts.find(c => c.quoteId === relatedQuote.id) : null;
+                
+                const row = document.createElement('tr');
+                row.className = 'clickable-row';
+                row.innerHTML = `
+                    <td>#${request.id}</td>
+                    <td>${request.customerName}</td>
+                    <td>${request.category}</td>
+                    <td><span class="visibility-badge visibility-${request.visibility}">${request.visibility === 'public' ? '공개' : '비공개'}</span></td>
+                    <td>₩${request.budget.toLocaleString()}</td>
+                    <td><span class="status-badge status-${request.status}">${getStatusText(request.status)}</span></td>
+                    <td>${relatedContract ? `<span class="status-badge status-${relatedContract.status}">${getStatusText(relatedContract.status)}</span>` : '-'}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); approveQuote(${request.id})">승인</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); rejectQuote(${request.id})">거절</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); quickContract(${request.id})">계약</button>
+                    </td>
+                `;
+                row.onclick = () => showQuoteDetail(request.id);
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // 공개 견적 로드
+        function loadPublicQuotes() {
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const publicQuotes = quoteRequests.filter(q => q.visibility === 'public');
+            
+            const tableBody = document.getElementById('publicQuotesTable');
+            tableBody.innerHTML = '';
+            
+            publicQuotes.forEach(quote => {
+                const row = document.createElement('tr');
+                row.className = 'clickable-row';
+                row.innerHTML = `
+                    <td>#${quote.id}</td>
+                    <td>${quote.category}</td>
+                    <td>${quote.description.substring(0, 15)}${quote.description.length > 15 ? '...' : ''}</td>
+                    <td>₩${quote.budget.toLocaleString()}</td>
+                    <td><span class="status-badge status-${quote.status}">${getStatusText(quote.status)}</span></td>
+                    <td><button class="btn btn-primary" onclick="event.stopPropagation(); showQuoteDetail(${quote.id})">상세보기</button></td>
+                `;
+                row.onclick = () => showQuoteDetail(quote.id);
+                tableBody.appendChild(row);
+            });
+            
+            if (publicQuotes.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">공개 견적이 없습니다.</td></tr>';
+            }
+        }
+        
+        // 전체 견적 로드
+        function loadAllQuotes() {
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const filter = document.getElementById('quoteFilter').value;
+            
+            let filteredQuotes = quoteRequests;
+            if (filter !== 'all') {
+                filteredQuotes = quoteRequests.filter(q => q.status === filter);
+            }
+            
+            const tableBody = document.getElementById('allQuotesTable');
+            tableBody.innerHTML = '';
+            
+            filteredQuotes.forEach(quote => {
+                const row = document.createElement('tr');
+                row.className = 'clickable-row';
+                row.innerHTML = `
+                    <td>#${quote.id}</td>
+                    <td>${quote.customerName}</td>
+                    <td>${quote.category}</td>
+                    <td><span class="visibility-badge visibility-${quote.visibility}">${quote.visibility === 'public' ? '공개' : '비공개'}</span></td>
+                    <td>₩${quote.budget.toLocaleString()}</td>
+                    <td><span class="status-badge status-${quote.status}">${getStatusText(quote.status)}</span></td>
+                    <td>
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); showQuoteDetail(${quote.id})">상세보기</button>
+                    </td>
+                `;
+                row.onclick = () => showQuoteDetail(quote.id);
+                tableBody.appendChild(row);
+            });
+            
+            if (filteredQuotes.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">견적이 없습니다.</td></tr>';
+            }
+        }
+        
+        // 견적 필터
+        function filterQuotes() {
+            loadAllQuotes();
+        }
+        
+        // 전체 계약 로드
+        function loadAllContracts() {
+            const contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+            const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const filter = document.getElementById('contractFilter').value;
+            
+            let filteredContracts = contracts;
+            if (filter !== 'all') {
+                filteredContracts = contracts.filter(c => c.status === filter);
+            }
+            
+            const tableBody = document.getElementById('allContractsTable');
+            tableBody.innerHTML = '';
+            
+            filteredContracts.forEach(contract => {
+                const quote = quotes.find(q => q.id === contract.quoteId);
+                const request = quote ? quoteRequests.find(q => q.id === quote.quoteRequestId) : null;
+                
+                const row = document.createElement('tr');
+                row.className = 'clickable-row';
+                row.innerHTML = `
+                    <td>#${contract.id}</td>
+                    <td>${request ? request.customerName : '알 수 없음'}</td>
+                    <td>${request ? request.category : '알 수 없음'}</td>
+                    <td>${contract.startDate}</td>
+                    <td>${contract.endDate}</td>
+                    <td>₩${contract.amount.toLocaleString()}</td>
+                    <td><span class="status-badge status-${contract.status}">${getStatusText(contract.status)}</span></td>
+                    <td>
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); changeContractStatus(${contract.id}, 'active')">진행</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); changeContractStatus(${contract.id}, 'completed')">완료</button>
+                    </td>
+                `;
+                row.onclick = () => showContractDetail(contract.id);
+                tableBody.appendChild(row);
+            });
+            
+            if (filteredContracts.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center;">계약이 없습니다.</td></tr>';
+            }
+        }
+        
+        // 계약 필터
+        function filterContracts() {
+            loadAllContracts();
+        }
+        
+        // 전체 후기 로드
+        function loadAllReviews() {
+            const reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+            const contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+            const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            
+            const tableBody = document.getElementById('allReviewsTable');
+            tableBody.innerHTML = '';
+            
+            reviews.forEach(review => {
+                const contract = contracts.find(c => c.id === review.contractId);
+                const quote = contract ? quotes.find(q => q.id === contract.quoteId) : null;
+                const request = quote ? quoteRequests.find(q => q.id === quote.quoteRequestId) : null;
+                
+                const photoCount = review.photos ? review.photos.length : 0;
+                const photoInfo = photoCount > 0 ? `${photoCount}장` : '없음';
+                
+                const row = document.createElement('tr');
+                row.className = 'clickable-row';
+                row.innerHTML = `
+                    <td>#${review.id}</td>
+                    <td>${request ? request.customerName : '알 수 없음'}</td>
+                    <td>${request ? request.category : '알 수 없음'}</td>
+                    <td>${'★'.repeat(review.rating)}</td>
+                    <td>${review.comment.substring(0, 12)}${review.comment.length > 12 ? '...' : ''}</td>
+                    <td>${photoInfo}</td>
+                    <td>${new Date(review.createdAt).toLocaleDateString('ko-KR')}</td>
+                    <td>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); deleteReview(${review.id})">삭제</button>
+                    </td>
+                `;
+                row.onclick = () => showReviewDetail(review.id);
+                tableBody.appendChild(row);
+            });
+            
+            if (reviews.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center;">후기가 없습니다.</td></tr>';
+            }
+        }
+        
+        // 상태 텍스트 변환
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': '대기',
+                'approved': '승인',
+                'rejected': '거절',
+                'completed': '완료'
+            };
+            return statusMap[status] || status;
+        }
+        
+        // 견적 승인
+        function approveQuote(id) {
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const request = quoteRequests.find(q => q.id === id);
+            
+            if (request) {
+                request.status = 'approved';
+                localStorage.setItem('quoteRequests', JSON.stringify(quoteRequests));
+                
+                // 견적서 생성
+                const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+                const newQuote = {
+                    id: quotes.length + 1,
+                    quoteRequestId: id,
+                    price: request.budget,
+                    description: request.description,
+                    status: 'approved'
+                };
+                quotes.push(newQuote);
+                localStorage.setItem('quotes', JSON.stringify(quotes));
+                
+                // 계약 자동 생성 옵션
+                if (confirm('견적이 승인되었습니다. 계약을 자동으로 생성하시겠습니까?')) {
+                    createContractFromQuote(newQuote.id, request);
+                } else {
+                    loadAdminDashboard();
+                }
+            }
+        }
+        
+        // 견적에서 계약 자동 생성
+        function createContractFromQuote(quoteId, request) {
+            const contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+            
+            // 기본 시작일은 오늘, 종료일은 30일 후
+            const today = new Date();
+            const startDate = today.toISOString().split('T')[0];
+            const endDate = new Date(today.setDate(today.getDate() + 30)).toISOString().split('T')[0];
+            
+            const newContract = {
+                id: contracts.length + 1,
+                quoteId: quoteId,
+                startDate: startDate,
+                endDate: endDate,
+                amount: request.budget,
+                status: 'pending',
+                notes: '자동 생성된 계약',
+                createdAt: new Date().toISOString()
+            };
+            
+            contracts.push(newContract);
+            localStorage.setItem('contracts', JSON.stringify(contracts));
+            
+            loadAdminDashboard();
+            alert('견적 승인 및 계약 자동 생성이 완료되었습니다.');
+        }
+        
+        // 견적 거절
+        function rejectQuote(id) {
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const request = quoteRequests.find(q => q.id === id);
+            
+            if (request) {
+                request.status = 'rejected';
+                localStorage.setItem('quoteRequests', JSON.stringify(quoteRequests));
+                loadAdminDashboard();
+                alert('견적이 거절되었습니다.');
+            }
+        }
+        
+        // 빠른 계약 생성
+        function quickContract(quoteRequestId) {
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const request = quoteRequests.find(q => q.id === quoteRequestId);
+            
+            if (!request) {
+                alert('견적 요청을 찾을 수 없습니다.');
+                return;
+            }
+            
+            // 먼저 견적을 승인 상태로 변경
+            request.status = 'approved';
+            localStorage.setItem('quoteRequests', JSON.stringify(quoteRequests));
+            
+            // 견적서 생성
+            const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            const newQuote = {
+                id: quotes.length + 1,
+                quoteRequestId: quoteRequestId,
+                price: request.budget,
+                description: request.description,
+                status: 'approved'
+            };
+            quotes.push(newQuote);
+            localStorage.setItem('quotes', JSON.stringify(quotes));
+            
+            // 계약 생성
+            createContractFromQuote(newQuote.id, request);
+        }
+        
+        // 계약 상태 변경
+        function changeContractStatus(contractId, newStatus) {
+            const contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+            const contract = contracts.find(c => c.id === contractId);
+            
+            if (contract) {
+                contract.status = newStatus;
+                localStorage.setItem('contracts', JSON.stringify(contracts));
+                loadAllContracts();
+                alert('계약 상태가 변경되었습니다.');
+            }
+        }
+        
+        // 계약 생성을 위한 견적 로드
+        function loadContractQuotes() {
+            const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+            
+            // 이미 계약이 생성된 견적 ID 제외
+            const contractedQuoteIds = contracts.map(c => c.quoteId);
+            const availableQuotes = quotes.filter(q => 
+                q.status === 'approved' && !contractedQuoteIds.includes(q.id)
+            );
+            
+            const select = document.getElementById('contractQuoteId');
+            select.innerHTML = '<option value="">견적 선택</option>';
+            
+            availableQuotes.forEach(quote => {
+                const request = quoteRequests.find(q => q.id === quote.quoteRequestId);
+                const option = document.createElement('option');
+                option.value = quote.id;
+                option.textContent = `#${quote.id} - ${request ? request.customerName : '알 수 없음'} (${request ? request.category : '알 수 없음'}) - ₩${quote.price.toLocaleString()}`;
+                select.appendChild(option);
+            });
+            
+            if (availableQuotes.length === 0) {
+                const option = document.createElement('option');
+                option.textContent = '계약 가능한 견적이 없습니다';
+                select.appendChild(option);
+                select.disabled = true;
+            } else {
+                select.disabled = false;
+            }
+        }
+        
+        // 계약 생성
+        function createContract() {
+            const quoteId = parseInt(document.getElementById('contractQuoteId').value);
+            const startDate = document.getElementById('contractStartDate').value;
+            const endDate = document.getElementById('contractEndDate').value;
+            const amount = parseInt(document.getElementById('contractAmount').value);
+            const status = document.getElementById('contractStatus').value;
+            const notes = document.getElementById('contractNotes').value;
+            
+            if (!quoteId || !startDate || !endDate || !amount) {
+                alert('필수 정보를 모두 입력해주세요.');
+                return;
+            }
+            
+            if (new Date(startDate) > new Date(endDate)) {
+                alert('종료일은 시작일보다 늦어야 합니다.');
+                return;
+            }
+            
+            const contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+            const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            const quote = quotes.find(q => q.id === quoteId);
+            
+            if (!quote) {
+                alert('견적을 찾을 수 없습니다.');
+                return;
+            }
+            
+            const newContract = {
+                id: contracts.length + 1,
+                quoteId: quoteId,
+                startDate: startDate,
+                endDate: endDate,
+                amount: amount,
+                status: status,
+                notes: notes,
+                createdAt: new Date().toISOString()
+            };
+            
+            contracts.push(newContract);
+            localStorage.setItem('contracts', JSON.stringify(contracts));
+            
+            // 폼 초기화
+            document.getElementById('contractQuoteId').value = '';
+            document.getElementById('contractStartDate').value = '';
+            document.getElementById('contractEndDate').value = '';
+            document.getElementById('contractAmount').value = '';
+            document.getElementById('contractStatus').value = 'pending';
+            document.getElementById('contractNotes').value = '';
+            
+            alert('계약이 생성되었습니다!');
+            loadContractQuotes(); // 견적 목록 새로고침
+        }
+        
+        // 후기 삭제
+        function deleteReview(reviewId) {
+            if (confirm('이 후기를 삭제하시겠습니까?')) {
+                const reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+                const filteredReviews = reviews.filter(r => r.id !== reviewId);
+                localStorage.setItem('reviews', JSON.stringify(filteredReviews));
+                loadAllReviews();
+                alert('후기가 삭제되었습니다.');
+            }
+        }
+        
+        // 후기 상세보기
+        function showReviewDetail(reviewId) {
+            const reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+            const contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+            const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            
+            const review = reviews.find(r => r.id === reviewId);
+            if (!review) {
+                alert('후기를 찾을 수 없습니다.');
+                return;
+            }
+            
+            const contract = contracts.find(c => c.id === review.contractId);
+            const quote = contract ? quotes.find(q => q.id === contract.quoteId) : null;
+            const request = quote ? quoteRequests.find(q => q.id === quote.quoteRequestId) : null;
+            
+            let photosHTML = '';
+            if (review.photos && review.photos.length > 0) {
+                photosHTML = `
+                    <div class="detail-section">
+                        <div class="detail-section-title">첨부 사진 (${review.photos.length}장)</div>
+                        <div class="photo-grid">
+                            ${review.photos.map(photo => `
+                                <div class="photo-item">
+                                    <img src="${photo.data}" alt="${photo.name}">
+                                    <div class="photo-desc">${photo.description || '설명 없음'}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                photosHTML = `
+                    <div class="detail-section">
+                        <div class="detail-section-title">첨부 사진</div>
+                        <div class="detail-row">
+                            <div class="detail-label">사진:</div>
+                            <div class="detail-value">없음</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            const detailHTML = `
+                <div class="detail-content">
+                    <div class="detail-section">
+                        <div class="detail-section-title">후기 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">후기 ID:</div>
+                            <div class="detail-value">#${review.id}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">계약 ID:</div>
+                            <div class="detail-value">#${review.contractId}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">프로젝트:</div>
+                            <div class="detail-value">${request ? request.category : '알 수 없음'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">고객명:</div>
+                            <div class="detail-value">${request ? request.customerName : '알 수 없음'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">이메일:</div>
+                            <div class="detail-value">${request ? request.customerEmail : '알 수 없음'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">평점:</div>
+                            <div class="detail-value">${'★'.repeat(review.rating)}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">작성일:</div>
+                            <div class="detail-value">${new Date(review.createdAt).toLocaleString('ko-KR')}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <div class="detail-section-title">후기 내용</div>
+                        <div class="detail-row">
+                            <div class="detail-label">내용:</div>
+                            <div class="detail-value">${review.comment}</div>
+                        </div>
+                    </div>
+                    
+                    ${photosHTML}
+                </div>
+            `;
+            
+            document.getElementById('detailModalBody').innerHTML = detailHTML;
+            document.getElementById('detailModal').classList.add('active');
+        }
+        
+        // 견적 상세 보기
+        function showQuoteDetail(quoteId) {
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            const request = quoteRequests.find(q => q.id === quoteId);
+            
+            if (!request) {
+                alert('견적을 찾을 수 없습니다.');
+                return;
+            }
+            
+            const relatedQuote = quotes.find(q => q.quoteRequestId === request.id);
+            
+            const detailHTML = `
+                <div class="detail-content">
+                    <div class="detail-section">
+                        <div class="detail-section-title">기본 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적 ID:</div>
+                            <div class="detail-value">#${request.id}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">고객명:</div>
+                            <div class="detail-value">${request.customerName}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">이메일:</div>
+                            <div class="detail-value">${request.customerEmail}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">카테고리:</div>
+                            <div class="detail-value">${request.category}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">공개 여부:</div>
+                            <div class="detail-value">
+                                <span class="visibility-badge visibility-${request.visibility}">
+                                    ${request.visibility === 'public' ? '공개' : '비공개'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <div class="detail-section-title">프로젝트 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">설명:</div>
+                            <div class="detail-value">${request.description}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">예산:</div>
+                            <div class="detail-value">₩${request.budget.toLocaleString()}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">마감일:</div>
+                            <div class="detail-value">${request.deadline}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">상태:</div>
+                            <div class="detail-value">
+                                <span class="status-badge status-${request.status}">
+                                    ${getStatusText(request.status)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${relatedQuote ? `
+                    <div class="detail-section">
+                        <div class="detail-section-title">견적서 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적가:</div>
+                            <div class="detail-value">₩${relatedQuote.price.toLocaleString()}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적 설명:</div>
+                            <div class="detail-value">${relatedQuote.description}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적 상태:</div>
+                            <div class="detail-value">
+                                <span class="status-badge status-${relatedQuote.status}">
+                                    ${getStatusText(relatedQuote.status)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="detail-section">
+                        <div class="detail-section-title">시스템 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">요청일:</div>
+                            <div class="detail-value">${new Date(request.createdAt).toLocaleString('ko-KR')}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('detailModalBody').innerHTML = detailHTML;
+            document.getElementById('detailModal').classList.add('active');
+        }
+        
+        // 계약 상세 보기
+        function showContractDetail(contractId) {
+            const contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+            const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            
+            const contract = contracts.find(c => c.id === contractId);
+            if (!contract) {
+                alert('계약을 찾을 수 없습니다.');
+                return;
+            }
+            
+            const quote = quotes.find(q => q.id === contract.quoteId);
+            const request = quote ? quoteRequests.find(q => q.id === quote.quoteRequestId) : null;
+            
+            const detailHTML = `
+                <div class="detail-content">
+                    <div class="detail-section">
+                        <div class="detail-section-title">계약 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">계약 ID:</div>
+                            <div class="detail-value">#${contract.id}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">계약 금액:</div>
+                            <div class="detail-value">₩${contract.amount.toLocaleString()}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">시작일:</div>
+                            <div class="detail-value">${contract.startDate}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">종료일:</div>
+                            <div class="detail-value">${contract.endDate}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">상태:</div>
+                            <div class="detail-value">
+                                <span class="status-badge status-${contract.status}">
+                                    ${getStatusText(contract.status)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${quote ? `
+                    <div class="detail-section">
+                        <div class="detail-section-title">관련 견적 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적 ID:</div>
+                            <div class="detail-value">#${quote.id}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적가:</div>
+                            <div class="detail-value">₩${quote.price.toLocaleString()}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적 설명:</div>
+                            <div class="detail-value">${quote.description}</div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${request ? `
+                    <div class="detail-section">
+                        <div class="detail-section-title">고객 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">고객명:</div>
+                            <div class="detail-value">${request.customerName}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">이메일:</div>
+                            <div class="detail-value">${request.customerEmail}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">카테고리:</div>
+                            <div class="detail-value">${request.category}</div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="detail-section">
+                        <div class="detail-section-title">시스템 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">계약일:</div>
+                            <div class="detail-value">${new Date(contract.createdAt).toLocaleString('ko-KR')}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('detailModalBody').innerHTML = detailHTML;
+            document.getElementById('detailModal').classList.add('active');
+        }
+        
+        // 상세 모달 닫기
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+        
+        // 모달 외부 클릭 시 닫기
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDetailModal();
+            }
+        });
+        
+        // 페이지 로드 시 데이터베이스 초기화
+        window.onload = function() {
+            initDatabase();
+            loadAdminDashboard();
+        };
+    </script>
+</body>
+</html>

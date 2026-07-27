@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>견적서비스 - 실제 웹서비스</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            font-size: 12px;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+        
+        .nav {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .nav-items {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .nav-item {
+            padding: 5px 10px;
+            background: white;
+            border: 1px solid #667eea;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #667eea;
+            font-size: 0.75em;
+        }
+        
+        .nav-item:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .nav-item.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .content {
+            padding: 15px;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .page-title {
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .form-group {
+            margin-bottom: 10px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+            color: #333;
+            font-size: 0.8em;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 0.8em;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-group textarea {
+            min-height: 50px;
+            resize: vertical;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.8em;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 5px 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        .stat-card h3 {
+            font-size: 0.7em;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+        
+        .stat-card .value {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+        }
+        
+        .table-header {
+            background: #f8f9fa;
+            padding: 10px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .table-title {
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.75em;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.7em;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .status-badge {
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.6em;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .status-approved {
+            background: #28a745;
+            color: white;
+        }
+        
+        .status-rejected {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .status-completed {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 250px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .modal-title {
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .modal-close:hover {
+            color: #333;
+        }
+        
+        .customer-form {
+            max-width: 300px;
+            margin: 0 auto;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .login-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .detail-modal {
+            max-width: 400px;
+        }
+        
+        .detail-content {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 8px 0;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+            width: 60px;
+            font-size: 0.75em;
+        }
+        
+        .detail-value {
+            color: #333;
+            flex: 1;
+            font-size: 0.75em;
+        }
+        
+        .detail-section {
+            margin: 10px 0;
+        }
+        
+        .detail-section-title {
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #667eea;
+        }
+        
+        .visibility-badge {
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.6em;
+            font-weight: 500;
+        }
+        
+        .visibility-public {
+            background: #28a745;
+            color: white;
+        }
+        
+        .visibility-private {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .password-modal {
+            max-width: 200px;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 0.9em;
+            text-align: center;
+            letter-spacing: 4px;
+            margin: 8px 0;
+        }
+        
+        .password-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .clickable-row {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .clickable-row:hover {
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>�‍💼 견적서비스 - 관리자 페이지</h1>
+            <p>전체 관리 및 모니터링</p>
+        </div>
+        
+        <div class="nav">
+            <div class="nav-items">
+                <div class="nav-item active" onclick="showPage('admin')">📊 대시보드</div>
+                <div class="nav-item" onclick="showPage('public-quotes')">🌐 공개 견적</div>
+                <div class="nav-item" onclick="showPage('all-quotes')">� 전체 견적</div>
+                <div class="nav-item" onclick="showPage('all-contracts')">� 전체 계약</div>
+                <div class="nav-item" onclick="showPage('all-reviews')">⭐ 전체 후기</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- 관리자 대시보드 페이지 -->
+            <div id="admin" class="page active">
+                <h2 class="page-title">👨‍💼 관리자 대시보드</h2>
+                
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <h3>총 견적 요청</h3>
+                        <div class="value" id="totalRequests">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>대기 중</h3>
+                        <div class="value" id="pendingRequests">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>진행 중 계약</h3>
+                        <div class="value" id="activeContracts">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>총 매출</h3>
+                        <div class="value" id="totalRevenue">₩0</div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">견적 요청 목록</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>고객명</th>
+                                <th>카테고리</th>
+                                <th>공개 여부</th>
+                                <th>예산</th>
+                                <th>상태</th>
+                                <th>계약</th>
+                                <th>작업</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quoteRequestsTable">
+                            <!-- 데이터가 여기에 로드됩니다 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 공개 견적 페이지 -->
+            <div id="public-quotes" class="page">
+                <h2 class="page-title">🌐 공개 견적</h2>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">다른 고객들의 공개 견적 요청</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>카테고리</th>
+                                <th>설명</th>
+                                <th>예산</th>
+                                <th>상태</th>
+                                <th>상세보기</th>
+                            </tr>
+                        </thead>
+                        <tbody id="publicQuotesTable">
+                            <!-- 데이터가 여기에 로드됩니다 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 내 견적 페이지 -->
+            <div id="my-quotes" class="page">
+                <h2 class="page-title">📋 내 견적</h2>
+                
+                <div class="form-group">
+                    <label>이메일로 검색</label>
+                    <input type="email" id="searchEmail" placeholder="이메일 입력">
+                    <button class="btn btn-primary" onclick="searchMyQuotes()" style="margin-top: 10px;">검색</button>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">견적 요청 내역</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>카테고리</th>
+                                <th>공개 여부</th>
+                                <th>설명</th>
+                                <th>예산</th>
+                                <th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody id="myQuotesTable">
+                            <!-- 데이터가 여기에 로드됩니다 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 내 계약 페이지 -->
+            <div id="my-contracts" class="page">
+                <h2 class="page-title">📄 내 계약</h2>
+                
+                <div class="form-group">
+                    <label>이메일로 검색</label>
+                    <input type="email" id="searchContractEmail" placeholder="이메일 입력">
+                    <button class="btn btn-primary" onclick="searchMyContracts()" style="margin-top: 10px;">검색</button>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">계약된 견적</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>견적 ID</th>
+                                <th>프로젝트</th>
+                                <th>계약 금액</th>
+                                <th>기간</th>
+                                <th>상태</th>
+                                <th>상세보기</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contractedQuotesTable">
+                            <!-- 계약된 견적 데이터 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">완료된 견적</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>견적 ID</th>
+                                <th>프로젝트</th>
+                                <th>완료 금액</th>
+                                <th>완료일</th>
+                                <th>상태</th>
+                                <th>상세보기</th>
+                            </tr>
+                        </thead>
+                        <tbody id="completedQuotesTable">
+                            <!-- 완료된 견적 데이터 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">계약 내역</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>계약 ID</th>
+                                <th>시작일</th>
+                                <th>종료일</th>
+                                <th>금액</th>
+                                <th>상태</th>
+                                <th>상세보기</th>
+                            </tr>
+                        </thead>
+                        <tbody id="myContractsTable">
+                            <!-- 계약 데이터 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 모달 -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">제목</div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                내용
+            </div>
+        </div>
+    </div>
+    
+    <!-- 상세 보기 모달 -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content detail-modal">
+            <div class="modal-header">
+                <div class="modal-title" id="detailModalTitle">견적 상세 정보</div>
+                <button class="modal-close" onclick="closeDetailModal()">×</button>
+            </div>
+            <div class="modal-body" id="detailModalBody">
+                <!-- 상세 내용이 여기에 로드됩니다 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 비밀번호 입력 모달 -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content password-modal">
+            <div class="modal-header">
+                <div class="modal-title">비밀번호 입력</div>
+                <button class="modal-close" onclick="closePasswordModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <p>비공개 견적입니다. 4자리 비밀번호를 입력해주세요.</p>
+                <input type="password" id="passwordInput" class="password-input" maxlength="4" pattern="[0-9]{4}" placeholder="••••">
+                <div style="text-align: right; margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="closePasswordModal()">취소</button>
+                    <button class="btn btn-primary" onclick="verifyPassword()">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 현재 접근하려는 견적 ID
+        let currentAccessQuoteId = null;
+        let isAdmin = false;
+        
+        // 전역 데이터 업데이트 함수 - 데이터 일관성 확보
+        function updateGlobalData() {
+            // 모든 페이지의 데이터를 최신 상태로 업데이트
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            const contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+            
+            // 데이터 간의 일관성 확인 및 업데이트
+            // 견적 요청 상태와 견적 상태 동기화
+            quotes.forEach(quote => {
+                const request = quoteRequests.find(q => q.id === quote.quoteRequestId);
+                if (request && request.status !== quote.status) {
+                    // 견적 상태가 변경되면 견적 요청 상태도 동기화
+                    request.status = quote.status;
+                }
+            });
+            
+            // 계약 상태와 견적 상태 동기화
+            contracts.forEach(contract => {
+                const quote = quotes.find(q => q.id === contract.quoteId);
+                if (quote) {
+                    if (contract.status === 'completed' && quote.status !== 'completed') {
+                        quote.status = 'completed';
+                        const request = quoteRequests.find(q => q.id === quote.quoteRequestId);
+                        if (request) {
+                            request.status = 'completed';
+                        }
+                    } else if (contract.status === 'active' && quote.status !== 'approved') {
+                        quote.status = 'approved';
+                        const request = quoteRequests.find(q => q.id === quote.quoteRequestId);
+                        if (request) {
+                            request.status = 'approved';
+                        }
+                    }
+                }
+            });
+            
+            // 업데이트된 데이터 저장
+            localStorage.setItem('quoteRequests', JSON.stringify(quoteRequests));
+            localStorage.setItem('quotes', JSON.stringify(quotes));
+            localStorage.setItem('contracts', JSON.stringify(contracts));
+            
+            return { quoteRequests, quotes, contracts };
+        }
+        
+        // 페이지 데이터 새로고침 함수
+        function refreshCurrentPage() {
+            const activePage = document.querySelector('.page.active');
+            if (activePage) {
+                const pageId = activePage.id;
+                
+                switch(pageId) {
+                    case 'admin':
+                        loadAdminDashboard();
+                        break;
+                    case 'public-quotes':
+                        loadPublicQuotes();
+                        break;
+                    case 'my-quotes':
+                        // 현재 검색된 이메일이 있으면 다시 검색
+                        const searchEmail = document.getElementById('searchEmail').value;
+                        if (searchEmail) {
+                            searchMyQuotes();
+                        }
+                        break;
+                    case 'my-contracts':
+                        // 현재 검색된 이메일이 있으면 다시 검색
+                        const searchContractEmail = document.getElementById('searchContractEmail').value;
+                        if (searchContractEmail) {
+                            searchMyContracts();
+                        }
+                        break;
+                }
+            }
+        }
+        
+        // 로컬 스토리지 데이터베이스 초기화
+        function initDatabase() {
+            if (!localStorage.getItem('quoteRequests')) {
+                const initialData = [
+                    { id: 1, customerName: '김철수', customerEmail: 'kim@example.com', category: '인테리어', description: '사무실 인테리어 시공', budget: 5000000, deadline: '2024-02-28', status: 'pending', visibility: 'public', accessPassword: null, createdAt: new Date().toISOString() },
+                    { id: 2, customerName: '이영희', customerEmail: 'lee@example.com', category: '웹 개발', description: '쇼핑몰 웹사이트 제작', budget: 3200000, deadline: '2024-02-15', status: 'approved', visibility: 'private', accessPassword: '1234', createdAt: new Date().toISOString() },
+                    { id: 3, customerName: '박민수', customerEmail: 'park@example.com', category: '앱 개발', description: '배달 앱 개발', budget: 8500000, deadline: '2024-03-15', status: 'completed', visibility: 'public', accessPassword: null, createdAt: new Date().toISOString() },
+                    { id: 4, customerName: '정수진', customerEmail: 'jung@example.com', category: '마케팅', description: 'SNS 마케팅 캠페인', budget: 2000000, deadline: '2024-01-30', status: 'approved', visibility: 'public', accessPassword: null, createdAt: new Date().toISOString() }
+                ];
+                localStorage.setItem('quoteRequests', JSON.stringify(initialData));
+            }
+            
+            if (!localStorage.getItem('quotes')) {
+                const initialQuotes = [
+                    { id: 1, quoteRequestId: 1, price: 4800000, description: '인테리어 시공 견적', status: 'pending' },
+                    { id: 2, quoteRequestId: 2, price: 3200000, description: '웹사이트 제작 견적', status: 'approved' },
+                    { id: 3, quoteRequestId: 3, price: 8500000, description: '앱 개발 견적', status: 'completed' },
+                    { id: 4, quoteRequestId: 4, price: 1800000, description: '마케팅 캠페인 견적', status: 'approved' }
+                ];
+                localStorage.setItem('quotes', JSON.stringify(initialQuotes));
+            }
+            
+            if (!localStorage.getItem('contracts')) {
+                const initialContracts = [
+                    { id: 1, quoteId: 2, startDate: '2024-01-18', endDate: '2024-02-15', amount: 3200000, status: 'completed', createdAt: new Date().toISOString() },
+                    { id: 2, quoteId: 3, startDate: '2024-01-20', endDate: '2024-03-15', amount: 8500000, status: 'active', createdAt: new Date().toISOString() },
+                    { id: 3, quoteId: 4, startDate: '2024-01-25', endDate: '2024-01-30', amount: 1800000, status: 'active', createdAt: new Date().toISOString() }
+                ];
+                localStorage.setItem('contracts', JSON.stringify(initialContracts));
+            }
+        }
+        
+        // 페이지 표시
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.getElementById(pageId).classList.add('active');
+            event.target.classList.add('active');
+            
+            // 관리자 모드 설정
+            isAdmin = (pageId === 'admin');
+            
+            // 페이지별 데이터 로드
+            if (pageId === 'admin') {
+                loadAdminDashboard();
+            } else if (pageId === 'public-quotes') {
+                loadPublicQuotes();
+            }
+        }
+        
+        // 공개/비공개 선택에 따른 비밀번호 필드 표시
+        document.getElementById('visibility').addEventListener('change', function() {
+            const passwordGroup = document.getElementById('passwordGroup');
+            if (this.value === 'private') {
+                passwordGroup.style.display = 'block';
+            } else {
+                passwordGroup.style.display = 'none';
+            }
+        });
+        
+        // 견적 요청 제출
+        function submitQuoteRequest() {
+            const customerName = document.getElementById('customerName').value;
+            const customerEmail = document.getElementById('customerEmail').value;
+            const category = document.getElementById('category').value;
+            const description = document.getElementById('description').value;
+            const budget = parseInt(document.getElementById('budget').value);
+            const deadline = document.getElementById('deadline').value;
+            const visibility = document.getElementById('visibility').value;
+            const accessPassword = document.getElementById('accessPassword').value;
+            
+            if (!customerName || !customerEmail || !description || !budget || !deadline) {
+                alert('모든 필드를 입력해주세요.');
+                return;
+            }
+            
+            if (visibility === 'private' && (!accessPassword || accessPassword.length !== 4 || !/^\d{4}$/.test(accessPassword))) {
+                alert('비공개 견적의 경우 4자리 숫자 비밀번호를 입력해주세요.');
+                return;
+            }
+            
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const newRequest = {
+                id: quoteRequests.length + 1,
+                customerName,
+                customerEmail,
+                category,
+                description,
+                budget,
+                deadline,
+                status: 'pending',
+                visibility: visibility,
+                accessPassword: visibility === 'private' ? accessPassword : null,
+                createdAt: new Date().toISOString()
+            };
+            
+            quoteRequests.push(newRequest);
+            localStorage.setItem('quoteRequests', JSON.stringify(quoteRequests));
+            
+            alert('견적 요청이 제출되었습니다!');
+            
+            // 폼 초기화
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerEmail').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('budget').value = '';
+            document.getElementById('deadline').value = '';
+            document.getElementById('accessPassword').value = '';
+            document.getElementById('visibility').value = 'public';
+            document.getElementById('passwordGroup').style.display = 'none';
+        }
+        
+        // 관리자 대시보드 로드
+        function loadAdminDashboard() {
+            const { quoteRequests, quotes, contracts } = updateGlobalData();
+            
+            // 통계 업데이트
+            document.getElementById('totalRequests').textContent = quoteRequests.length;
+            document.getElementById('pendingRequests').textContent = quoteRequests.filter(q => q.status === 'pending').length;
+            document.getElementById('activeContracts').textContent = contracts.filter(c => c.status === 'active').length;
+            
+            const totalRevenue = contracts
+                .filter(c => c.status === 'completed')
+                .reduce((sum, c) => sum + c.amount, 0);
+            document.getElementById('totalRevenue').textContent = '₩' + totalRevenue.toLocaleString();
+            
+            // 테이블 업데이트
+            const tableBody = document.getElementById('quoteRequestsTable');
+            tableBody.innerHTML = '';
+            
+            quoteRequests.forEach(request => {
+                const relatedQuote = quotes.find(q => q.quoteRequestId === request.id);
+                const relatedContract = relatedQuote ? contracts.find(c => c.quoteId === relatedQuote.id) : null;
+                
+                const row = document.createElement('tr');
+                row.className = 'clickable-row';
+                row.innerHTML = `
+                    <td>#${request.id}</td>
+                    <td>${request.customerName}</td>
+                    <td>${request.category}</td>
+                    <td><span class="visibility-badge visibility-${request.visibility}">${request.visibility === 'public' ? '공개' : '비공개'}</span></td>
+                    <td>₩${request.budget.toLocaleString()}</td>
+                    <td><span class="status-badge status-${request.status}">${getStatusText(request.status)}</span></td>
+                    <td>${relatedContract ? `<span class="status-badge status-${relatedContract.status}">${getStatusText(relatedContract.status)}</span>` : '-'}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); approveQuote(${request.id})">승인</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); rejectQuote(${request.id})">거절</button>
+                    </td>
+                `;
+                row.onclick = () => showQuoteDetail(request.id);
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // 상태 텍스트 변환
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': '대기',
+                'approved': '승인',
+                'rejected': '거절',
+                'completed': '완료'
+            };
+            return statusMap[status] || status;
+        }
+        
+        // 공개 견적 로드
+        function loadPublicQuotes() {
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const publicQuotes = quoteRequests.filter(q => q.visibility === 'public');
+            
+            const tableBody = document.getElementById('publicQuotesTable');
+            tableBody.innerHTML = '';
+            
+            publicQuotes.forEach(quote => {
+                const row = document.createElement('tr');
+                row.className = 'clickable-row';
+                row.innerHTML = `
+                    <td>#${quote.id}</td>
+                    <td>${quote.category}</td>
+                    <td>${quote.description.substring(0, 30)}${quote.description.length > 30 ? '...' : ''}</td>
+                    <td>₩${quote.budget.toLocaleString()}</td>
+                    <td><span class="status-badge status-${quote.status}">${getStatusText(quote.status)}</span></td>
+                    <td><button class="btn btn-primary" onclick="event.stopPropagation(); showQuoteDetail(${quote.id})">상세보기</button></td>
+                `;
+                row.onclick = () => showQuoteDetail(quote.id);
+                tableBody.appendChild(row);
+            });
+            
+            if (publicQuotes.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">공개 견적이 없습니다.</td></tr>';
+            }
+        }
+        
+        // 견적 상세 보기
+        function showQuoteDetail(quoteId) {
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            const request = quoteRequests.find(q => q.id === quoteId);
+            
+            if (!request) {
+                alert('견적을 찾을 수 없습니다.');
+                return;
+            }
+            
+            // 비공개 견적이고 관리자가 아닌 경우 비밀번호 확인
+            if (request.visibility === 'private' && !isAdmin) {
+                currentAccessQuoteId = quoteId;
+                document.getElementById('passwordModal').classList.add('active');
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+                return;
+            }
+            
+            // 상세 정보 표시
+            displayQuoteDetail(request, quotes);
+        }
+        
+        // 비밀번호 확인
+        function verifyPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const request = quoteRequests.find(q => q.id === currentAccessQuoteId);
+            
+            if (!request) {
+                alert('견적을 찾을 수 없습니다.');
+                closePasswordModal();
+                return;
+            }
+            
+            if (request.accessPassword === password) {
+                closePasswordModal();
+                const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+                displayQuoteDetail(request, quotes);
+            } else {
+                alert('비밀번호가 일치하지 않습니다.');
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+        
+        // 견적 상세 정보 표시
+        function displayQuoteDetail(request, quotes) {
+            const relatedQuote = quotes.find(q => q.quoteRequestId === request.id);
+            
+            const detailHTML = `
+                <div class="detail-content">
+                    <div class="detail-section">
+                        <div class="detail-section-title">기본 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적 ID:</div>
+                            <div class="detail-value">#${request.id}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">고객명:</div>
+                            <div class="detail-value">${request.customerName}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">이메일:</div>
+                            <div class="detail-value">${request.customerEmail}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">카테고리:</div>
+                            <div class="detail-value">${request.category}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">공개 여부:</div>
+                            <div class="detail-value">
+                                <span class="visibility-badge visibility-${request.visibility}">
+                                    ${request.visibility === 'public' ? '공개' : '비공개'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <div class="detail-section-title">프로젝트 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">설명:</div>
+                            <div class="detail-value">${request.description}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">예산:</div>
+                            <div class="detail-value">₩${request.budget.toLocaleString()}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">마감일:</div>
+                            <div class="detail-value">${request.deadline}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">상태:</div>
+                            <div class="detail-value">
+                                <span class="status-badge status-${request.status}">
+                                    ${getStatusText(request.status)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${relatedQuote ? `
+                    <div class="detail-section">
+                        <div class="detail-section-title">견적서 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적가:</div>
+                            <div class="detail-value">₩${relatedQuote.price.toLocaleString()}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적 설명:</div>
+                            <div class="detail-value">${relatedQuote.description}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적 상태:</div>
+                            <div class="detail-value">
+                                <span class="status-badge status-${relatedQuote.status}">
+                                    ${getStatusText(relatedQuote.status)}
+                                </span>
+                            </div>
+                        </div>
+                        ${isAdmin ? `
+                        <div class="detail-row">
+                            <div class="detail-label">상태 변경:</div>
+                            <div class="detail-value">
+                                <button class="btn btn-primary" onclick="changeQuoteStatus(${relatedQuote.id}, 'approved')">승인</button>
+                                <button class="btn btn-secondary" onclick="changeQuoteStatus(${relatedQuote.id}, 'completed')">완료</button>
+                                <button class="btn btn-secondary" onclick="changeQuoteStatus(${relatedQuote.id}, 'rejected')">거절</button>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                    ` : ''}
+                    
+                    <div class="detail-section">
+                        <div class="detail-section-title">시스템 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">요청일:</div>
+                            <div class="detail-value">${new Date(request.createdAt).toLocaleString('ko-KR')}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('detailModalBody').innerHTML = detailHTML;
+            document.getElementById('detailModal').classList.add('active');
+        }
+        
+        // 상세 모달 닫기
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+        
+        // 비밀번호 모달 닫기
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+            currentAccessQuoteId = null;
+        }
+        
+        // 견적 상태 변경 (관리자용)
+        function changeQuoteStatus(quoteId, newStatus) {
+            if (!isAdmin) {
+                alert('관리자만 상태를 변경할 수 있습니다.');
+                return;
+            }
+            
+            const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+            
+            const quote = quotes.find(q => q.id === quoteId);
+            if (quote) {
+                quote.status = newStatus;
+                
+                // 관련된 견적 요청 상태도 업데이트
+                const request = quoteRequests.find(q => q.id === quote.quoteRequestId);
+                if (request) {
+                    request.status = newStatus;
+                }
+                
+                // 완료 상태인 경우 관련 계약도 완료로 변경
+                if (newStatus === 'completed') {
+                    const contract = contracts.find(c => c.quoteId === quoteId);
+                    if (contract) {
+                        contract.status = 'completed';
+                    }
+                }
+                
+                localStorage.setItem('quotes', JSON.stringify(quotes));
+                localStorage.setItem('quoteRequests', JSON.stringify(quoteRequests));
+                localStorage.setItem('contracts', JSON.stringify(contracts));
+                
+                // 전역 데이터 업데이트 및 페이지 새로고침
+                updateGlobalData();
+                refreshCurrentPage();
+                
+                // 상세 모달 닫기
+                closeDetailModal();
+                
+                alert(`견적 상태가 ${getStatusText(newStatus)}(으)로 변경되었습니다.`);
+            }
+        }
+        
+        // 견적 승인
+        function approveQuote(id) {
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const request = quoteRequests.find(q => q.id === id);
+            
+            if (request) {
+                request.status = 'approved';
+                localStorage.setItem('quoteRequests', JSON.stringify(quoteRequests));
+                
+                // 견적서 생성
+                const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+                quotes.push({
+                    id: quotes.length + 1,
+                    quoteRequestId: id,
+                    price: request.budget,
+                    description: request.description,
+                    status: 'approved'
+                });
+                localStorage.setItem('quotes', JSON.stringify(quotes));
+                
+                // 전역 데이터 업데이트 및 페이지 새로고침
+                updateGlobalData();
+                refreshCurrentPage();
+                alert('견적이 승인되었습니다.');
+            }
+        }
+        
+        // 견적 거절
+        function rejectQuote(id) {
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const request = quoteRequests.find(q => q.id === id);
+            
+            if (request) {
+                request.status = 'rejected';
+                localStorage.setItem('quoteRequests', JSON.stringify(quoteRequests));
+                
+                // 전역 데이터 업데이트 및 페이지 새로고침
+                updateGlobalData();
+                refreshCurrentPage();
+                alert('견적이 거절되었습니다.');
+            }
+        }
+        
+        // 내 견적 검색
+        function searchMyQuotes() {
+            const email = document.getElementById('searchEmail').value;
+            const { quoteRequests, quotes, contracts } = updateGlobalData();
+            const myQuotes = quoteRequests.filter(q => q.customerEmail === email);
+            
+            const tableBody = document.getElementById('myQuotesTable');
+            tableBody.innerHTML = '';
+            
+            myQuotes.forEach(quote => {
+                const relatedQuote = quotes.find(q => q.quoteRequestId === quote.id);
+                const relatedContract = relatedQuote ? contracts.find(c => c.quoteId === relatedQuote.id) : null;
+                
+                const row = document.createElement('tr');
+                row.className = 'clickable-row';
+                row.innerHTML = `
+                    <td>#${quote.id}</td>
+                    <td>${quote.category}</td>
+                    <td><span class="visibility-badge visibility-${quote.visibility}">${quote.visibility === 'public' ? '공개' : '비공개'}</span></td>
+                    <td>${quote.description.substring(0, 20)}${quote.description.length > 20 ? '...' : ''}</td>
+                    <td>₩${quote.budget.toLocaleString()}</td>
+                    <td><span class="status-badge status-${quote.status}">${getStatusText(quote.status)}</span></td>
+                `;
+                row.onclick = () => {
+                    isAdmin = false; // 고객 모드로 설정
+                    showQuoteDetail(quote.id);
+                };
+                tableBody.appendChild(row);
+            });
+            
+            if (myQuotes.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">검색 결과가 없습니다.</td></tr>';
+            }
+        }
+        
+        // 내 계약 검색
+        function searchMyContracts() {
+            const email = document.getElementById('searchContractEmail').value;
+            const { quoteRequests, quotes, contracts } = updateGlobalData();
+            
+            // 해당 이메일의 견적 요청 ID 찾기
+            const myQuoteRequestIds = quoteRequests
+                .filter(q => q.customerEmail === email)
+                .map(q => q.id);
+            
+            // 해당 견적 요청의 견적 찾기
+            const myQuotes = quotes.filter(q => myQuoteRequestIds.includes(q.quoteRequestId));
+            
+            // 계약된 견적 (승인된 상태)
+            const contractedQuotes = myQuotes.filter(q => q.status === 'approved');
+            const contractedTableBody = document.getElementById('contractedQuotesTable');
+            contractedTableBody.innerHTML = '';
+            
+            contractedQuotes.forEach(quote => {
+                const request = quoteRequests.find(q => q.id === quote.quoteRequestId);
+                const contract = contracts.find(c => c.quoteId === quote.id);
+                const row = document.createElement('tr');
+                row.className = 'clickable-row';
+                row.innerHTML = `
+                    <td>#${quote.id}</td>
+                    <td>${request ? request.category : '알 수 없음'}</td>
+                    <td>₩${quote.price.toLocaleString()}</td>
+                    <td>${contract ? `${contract.startDate} ~ ${contract.endDate}` : '계약 미정'}</td>
+                    <td><span class="status-badge status-${quote.status}">${getStatusText(quote.status)}</span></td>
+                    <td><button class="btn btn-primary" onclick="event.stopPropagation(); showQuoteDetail(${quote.quoteRequestId})">상세보기</button></td>
+                `;
+                row.onclick = () => {
+                    isAdmin = false;
+                    showQuoteDetail(quote.quoteRequestId);
+                };
+                contractedTableBody.appendChild(row);
+            });
+            
+            if (contractedQuotes.length === 0) {
+                contractedTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">계약된 견적이 없습니다.</td></tr>';
+            }
+            
+            // 완료된 견적
+            const completedQuotes = myQuotes.filter(q => q.status === 'completed');
+            const completedTableBody = document.getElementById('completedQuotesTable');
+            completedTableBody.innerHTML = '';
+            
+            completedQuotes.forEach(quote => {
+                const request = quoteRequests.find(q => q.id === quote.quoteRequestId);
+                const contract = contracts.find(c => c.quoteId === quote.id);
+                const row = document.createElement('tr');
+                row.className = 'clickable-row';
+                row.innerHTML = `
+                    <td>#${quote.id}</td>
+                    <td>${request ? request.category : '알 수 없음'}</td>
+                    <td>₩${quote.price.toLocaleString()}</td>
+                    <td>${contract ? contract.endDate : '알 수 없음'}</td>
+                    <td><span class="status-badge status-${quote.status}">${getStatusText(quote.status)}</span></td>
+                    <td><button class="btn btn-primary" onclick="event.stopPropagation(); showQuoteDetail(${quote.quoteRequestId})">상세보기</button></td>
+                `;
+                row.onclick = () => {
+                    isAdmin = false;
+                    showQuoteDetail(quote.quoteRequestId);
+                };
+                completedTableBody.appendChild(row);
+            });
+            
+            if (completedQuotes.length === 0) {
+                completedTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">완료된 견적이 없습니다.</td></tr>';
+            }
+            
+            // 계약 내역
+            const myContractIds = myQuotes.map(q => q.id);
+            const myContracts = contracts.filter(c => myContractIds.includes(c.quoteId));
+            const contractsTableBody = document.getElementById('myContractsTable');
+            contractsTableBody.innerHTML = '';
+            
+            myContracts.forEach(contract => {
+                const quote = quotes.find(q => q.id === contract.quoteId);
+                const request = quote ? quoteRequests.find(q => q.id === quote.quoteRequestId) : null;
+                const row = document.createElement('tr');
+                row.className = 'clickable-row';
+                row.innerHTML = `
+                    <td>#${contract.id}</td>
+                    <td>${contract.startDate}</td>
+                    <td>${contract.endDate}</td>
+                    <td>₩${contract.amount.toLocaleString()}</td>
+                    <td><span class="status-badge status-${contract.status}">${getStatusText(contract.status)}</span></td>
+                    <td><button class="btn btn-primary" onclick="event.stopPropagation(); showContractDetail(${contract.id})">상세보기</button></td>
+                `;
+                contractsTableBody.appendChild(row);
+            });
+            
+            if (myContracts.length === 0) {
+                contractsTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">계약 내역이 없습니다.</td></tr>';
+            }
+        }
+        
+        // 계약 상세 보기
+        function showContractDetail(contractId) {
+            const contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+            const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            
+            const contract = contracts.find(c => c.id === contractId);
+            if (!contract) {
+                alert('계약을 찾을 수 없습니다.');
+                return;
+            }
+            
+            const quote = quotes.find(q => q.id === contract.quoteId);
+            const request = quote ? quoteRequests.find(q => q.id === quote.quoteRequestId) : null;
+            
+            const detailHTML = `
+                <div class="detail-content">
+                    <div class="detail-section">
+                        <div class="detail-section-title">계약 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">계약 ID:</div>
+                            <div class="detail-value">#${contract.id}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">계약 금액:</div>
+                            <div class="detail-value">₩${contract.amount.toLocaleString()}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">시작일:</div>
+                            <div class="detail-value">${contract.startDate}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">종료일:</div>
+                            <div class="detail-value">${contract.endDate}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">상태:</div>
+                            <div class="detail-value">
+                                <span class="status-badge status-${contract.status}">
+                                    ${getStatusText(contract.status)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${quote ? `
+                    <div class="detail-section">
+                        <div class="detail-section-title">관련 견적 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적 ID:</div>
+                            <div class="detail-value">#${quote.id}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적가:</div>
+                            <div class="detail-value">₩${quote.price.toLocaleString()}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적 설명:</div>
+                            <div class="detail-value">${quote.description}</div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${request ? `
+                    <div class="detail-section">
+                        <div class="detail-section-title">고객 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">고객명:</div>
+                            <div class="detail-value">${request.customerName}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">이메일:</div>
+                            <div class="detail-value">${request.customerEmail}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">카테고리:</div>
+                            <div class="detail-value">${request.category}</div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="detail-section">
+                        <div class="detail-section-title">시스템 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">계약일:</div>
+                            <div class="detail-value">${new Date(contract.createdAt).toLocaleString('ko-KR')}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('detailModalBody').innerHTML = detailHTML;
+            document.getElementById('detailModal').classList.add('active');
+        }
+        
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+        
+        // 비밀번호 입력에서 엔터키 처리
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyPassword();
+            }
+        });
+        
+        // 모달 외부 클릭 시 닫기
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDetailModal();
+            }
+        });
+        
+        document.getElementById('passwordModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePasswordModal();
+            }
+        });
+        
+        // 페이지 로드 시 데이터베이스 초기화
+        window.onload = function() {
+            initDatabase();
+            loadPublicQuotes(); // 공개 견적 초기 로드
+        };
+    </script>
+</body>
+</html>

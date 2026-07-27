@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>견적서비스 - 고객 페이지</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            font-size: 12px;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+        
+        .nav {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .nav-items {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .nav-item {
+            padding: 5px 10px;
+            background: white;
+            border: 1px solid #667eea;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #667eea;
+            font-size: 0.75em;
+        }
+        
+        .nav-item:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .nav-item.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .content {
+            padding: 15px;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .page-title {
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .form-group {
+            margin-bottom: 10px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+            color: #333;
+            font-size: 0.8em;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 0.8em;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-group textarea {
+            min-height: 50px;
+            resize: vertical;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.8em;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+        }
+        
+        .table-header {
+            background: #f8f9fa;
+            padding: 10px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .table-title {
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.75em;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.7em;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .status-badge {
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.6em;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .status-approved {
+            background: #28a745;
+            color: white;
+        }
+        
+        .status-rejected {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .status-completed {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .visibility-badge {
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.6em;
+            font-weight: 500;
+        }
+        
+        .visibility-public {
+            background: #28a745;
+            color: white;
+        }
+        
+        .visibility-private {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 250px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .modal-title {
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .modal-close:hover {
+            color: #333;
+        }
+        
+        .detail-modal {
+            max-width: 400px;
+        }
+        
+        .detail-content {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 8px 0;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+            width: 60px;
+            font-size: 0.75em;
+        }
+        
+        .detail-value {
+            color: #333;
+            flex: 1;
+            font-size: 0.75em;
+        }
+        
+        .detail-section {
+            margin: 10px 0;
+        }
+        
+        .detail-section-title {
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #667eea;
+        }
+        
+        .password-modal {
+            max-width: 200px;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 0.9em;
+            text-align: center;
+            letter-spacing: 4px;
+            margin: 8px 0;
+        }
+        
+        .password-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .clickable-row {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .clickable-row:hover {
+            background-color: #e9ecef;
+        }
+        
+        .customer-form {
+            max-width: 300px;
+            margin: 0 auto;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .review-form {
+            max-width: 300px;
+            margin: 0 auto;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .rating-stars {
+            display: flex;
+            gap: 5px;
+            margin: 10px 0;
+        }
+        
+        .star {
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #ddd;
+        }
+        
+        .star.active {
+            color: #ffc107;
+        }
+        
+        .star:hover {
+            color: #ffc107;
+        }
+        
+        .admin-link {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 0.7em;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        
+        .admin-link:hover {
+            background: #5568d3;
+        }
+        
+        .photo-upload-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .photo-upload-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .photo-preview {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border: 2px dashed #e9ecef;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photo-preview .add-icon {
+            font-size: 2em;
+            color: #ddd;
+        }
+        
+        .photo-preview .remove-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            font-size: 0.8em;
+            display: none;
+        }
+        
+        .photo-preview:hover .remove-btn {
+            display: block;
+        }
+        
+        .photo-description {
+            width: 100%;
+            padding: 4px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 0.7em;
+            margin-top: 5px;
+        }
+        
+        .photo-counter {
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.7em;
+            margin: 5px 0;
+        }
+        
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .photo-item {
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .photo-item img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+        
+        .photo-item .photo-desc {
+            padding: 5px;
+            font-size: 0.7em;
+            color: #333;
+            background: #f8f9fa;
+        }
+        
+        .photo-upload-section.highlight {
+            border: 2px solid #28a745;
+            animation: pulse 2s;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 견적서비스 - 고객 페이지</h1>
+            <p>견적요청/진행사항/후기</p>
+        </div>
+        
+        <div class="nav">
+            <div class="nav-items">
+                <div class="nav-item active" onclick="showPage('quote-request')">📝 견적 요청</div>
+                <div class="nav-item" onclick="showPage('my-progress')">📊 진행사항</div>
+                <div class="nav-item" onclick="showPage('my-reviews')">⭐ 내 후기</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- 견적 요청 페이지 -->
+            <div id="quote-request" class="page active">
+                <h2 class="page-title">📝 견적 요청하기</h2>
+                
+                <div class="customer-form">
+                    <div class="form-group">
+                        <label>이름</label>
+                        <input type="text" id="customerName" placeholder="홍길동">
+                    </div>
+                    <div class="form-group">
+                        <label>이메일</label>
+                        <input type="email" id="customerEmail" placeholder="example@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>카테고리</label>
+                        <select id="category">
+                            <option value="인테리어">인테리어</option>
+                            <option value="웹 개발">웹 개발</option>
+                            <option value="앱 개발">앱 개발</option>
+                            <option value="마케팅">마케팅</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>프로젝트 설명</label>
+                        <textarea id="description" placeholder="프로젝트에 대한 상세 설명을 입력해주세요"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>예산 (원)</label>
+                        <input type="number" id="budget" placeholder="5000000">
+                    </div>
+                    <div class="form-group">
+                        <label>희망 마감일</label>
+                        <input type="date" id="deadline">
+                    </div>
+                    <div class="form-group">
+                        <label>공개 여부</label>
+                        <select id="visibility">
+                            <option value="public">공개 (다른 고객들에게도 표시)</option>
+                            <option value="private">비공개 (나만 볼 수 있음)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="passwordGroup" style="display: none;">
+                        <label>비밀번호 (4자리 숫자)</label>
+                        <input type="password" id="accessPassword" placeholder="1234" maxlength="4" pattern="[0-9]{4}">
+                        <small style="color: #6c757d;">비공개 견적 확인 시 필요한 4자리 숫자</small>
+                    </div>
+                    <button class="btn btn-primary" onclick="submitQuoteRequest()">견적 요청하기</button>
+                </div>
+            </div>
+            
+            <!-- 진행사항 페이지 -->
+            <div id="my-progress" class="page">
+                <h2 class="page-title">📊 내 진행사항</h2>
+                
+                <div class="form-group">
+                    <label>이메일로 검색</label>
+                    <input type="email" id="searchEmail" placeholder="이메일 입력">
+                    <button class="btn btn-primary" onclick="searchMyProgress()" style="margin-top: 10px;">검색</button>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">내 견적 요청</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>카테고리</th>
+                                <th>공개</th>
+                                <th>설명</th>
+                                <th>예산</th>
+                                <th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody id="myQuotesTable">
+                            <!-- 데이터가 여기에 로드됩니다 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">계약된 견적</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>견적 ID</th>
+                                <th>프로젝트</th>
+                                <th>계약 금액</th>
+                                <th>기간</th>
+                                <th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contractedQuotesTable">
+                            <!-- 계약된 견적 데이터 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">완료된 계약 (후기 작성 가능)</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>계약 ID</th>
+                                <th>프로젝트</th>
+                                <th>완료일</th>
+                                <th>금액</th>
+                                <th>후기 작성</th>
+                            </tr>
+                        </thead>
+                        <tbody id="completedContractsForReview">
+                            <!-- 완료된 계약 데이터 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 내 후기 페이지 -->
+            <div id="my-reviews" class="page">
+                <h2 class="page-title">⭐ 내 후기</h2>
+                
+                <div class="form-group">
+                    <label>이메일로 검색</label>
+                    <input type="email" id="searchReviewEmail" placeholder="이메일 입력">
+                    <button class="btn btn-primary" onclick="searchMyReviews()" style="margin-top: 10px;">검색</button>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">후기 작성 가능한 완료된 계약</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>계약 ID</th>
+                                <th>프로젝트</th>
+                                <th>완료일</th>
+                                <th>금액</th>
+                                <th>후기 작성</th>
+                            </tr>
+                        </thead>
+                        <tbody id="completedContractsTable">
+                            <!-- 완료된 계약 데이터 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">내 후기 목록</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>프로젝트</th>
+                                <th>평점</th>
+                                <th>후기 내용</th>
+                                <th>사진</th>
+                                <th>작성일</th>
+                            </tr>
+                        </thead>
+                        <tbody id="myReviewsTable">
+                            <!-- 후기 데이터 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">후기 작성</div>
+                    </div>
+                    <div class="review-form">
+                        <div class="form-group">
+                            <label>계약 ID (완료된 계약만 가능)</label>
+                            <select id="reviewContractId">
+                                <option value="">계약 선택</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>평점</label>
+                            <div class="rating-stars" id="ratingStars">
+                                <span class="star" data-rating="1">★</span>
+                                <span class="star" data-rating="2">★</span>
+                                <span class="star" data-rating="3">★</span>
+                                <span class="star" data-rating="4">★</span>
+                                <span class="star" data-rating="5">★</span>
+                            </div>
+                            <input type="hidden" id="rating" value="5">
+                        </div>
+                        <div class="form-group">
+                            <label>후기 내용</label>
+                            <textarea id="reviewComment" placeholder="서비스에 대한 후기를 작성해주세요"></textarea>
+                        </div>
+                        
+                        <div class="photo-upload-section">
+                            <div class="form-group">
+                                <label>사진 첨부 (최대 20장)</label>
+                                <div class="photo-counter" id="photoCounter">0/20장</div>
+                                <div class="photo-upload-container" id="photoUploadContainer">
+                                    <div class="photo-preview" onclick="document.getElementById('photoInput').click()">
+                                        <span class="add-icon">+</span>
+                                    </div>
+                                </div>
+                                <input type="file" id="photoInput" accept="image/*" multiple style="display: none;" onchange="handlePhotoUpload(event)">
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="submitReview()">후기 작성</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 관리자 페이지 링크 -->
+    <a href="admin.html" class="admin-link">👨‍💼 관리자 페이지</a>
+    
+    <!-- 모달 -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">제목</div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                내용
+            </div>
+        </div>
+    </div>
+    
+    <!-- 상세 보기 모달 -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content detail-modal">
+            <div class="modal-header">
+                <div class="modal-title" id="detailModalTitle">견적 상세 정보</div>
+                <button class="modal-close" onclick="closeDetailModal()">×</button>
+            </div>
+            <div class="modal-body" id="detailModalBody">
+                <!-- 상세 내용이 여기에 로드됩니다 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 비밀번호 입력 모달 -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content password-modal">
+            <div class="modal-header">
+                <div class="modal-title">비밀번호 입력</div>
+                <button class="modal-close" onclick="closePasswordModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <p>비공개 견적입니다. 4자리 비밀번호를 입력해주세요.</p>
+                <input type="password" id="passwordInput" class="password-input" maxlength="4" pattern="[0-9]{4}" placeholder="••••">
+                <div style="text-align: right; margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="closePasswordModal()">취소</button>
+                    <button class="btn btn-primary" onclick="verifyPassword()">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 현재 접근하려는 견적 ID
+        let currentAccessQuoteId = null;
+        let isAdmin = false;
+        let selectedRating = 5;
+        let uploadedPhotos = [];
+        const MAX_PHOTOS = 20;
+        
+        // 로컬 스토리지 데이터베이스 초기화
+        function initDatabase() {
+            if (!localStorage.getItem('quoteRequests')) {
+                const initialData = [
+                    { id: 1, customerName: '김철수', customerEmail: 'kim@example.com', category: '인테리어', description: '사무실 인테리어 시공', budget: 5000000, deadline: '2024-02-28', status: 'pending', visibility: 'public', accessPassword: null, createdAt: new Date().toISOString() },
+                    { id: 2, customerName: '이영희', customerEmail: 'lee@example.com', category: '웹 개발', description: '쇼핑몰 웹사이트 제작', budget: 3200000, deadline: '2024-02-15', status: 'approved', visibility: 'private', accessPassword: '1234', createdAt: new Date().toISOString() },
+                    { id: 3, customerName: '박민수', customerEmail: 'park@example.com', category: '앱 개발', description: '배달 앱 개발', budget: 8500000, deadline: '2024-03-15', status: 'completed', visibility: 'public', accessPassword: null, createdAt: new Date().toISOString() },
+                    { id: 4, customerName: '정수진', customerEmail: 'jung@example.com', category: '마케팅', description: 'SNS 마케팅 캠페인', budget: 2000000, deadline: '2024-01-30', status: 'approved', visibility: 'public', accessPassword: null, createdAt: new Date().toISOString() }
+                ];
+                localStorage.setItem('quoteRequests', JSON.stringify(initialData));
+            }
+            
+            if (!localStorage.getItem('quotes')) {
+                const initialQuotes = [
+                    { id: 1, quoteRequestId: 1, price: 4800000, description: '인테리어 시공 견적', status: 'pending' },
+                    { id: 2, quoteRequestId: 2, price: 3200000, description: '웹사이트 제작 견적', status: 'approved' },
+                    { id: 3, quoteRequestId: 3, price: 8500000, description: '앱 개발 견적', status: 'completed' },
+                    { id: 4, quoteRequestId: 4, price: 1800000, description: '마케팅 캠페인 견적', status: 'approved' }
+                ];
+                localStorage.setItem('quotes', JSON.stringify(initialQuotes));
+            }
+            
+            if (!localStorage.getItem('contracts')) {
+                const initialContracts = [
+                    { id: 1, quoteId: 2, startDate: '2024-01-18', endDate: '2024-02-15', amount: 3200000, status: 'completed', createdAt: new Date().toISOString() },
+                    { id: 2, quoteId: 3, startDate: '2024-01-20', endDate: '2024-03-15', amount: 8500000, status: 'completed', createdAt: new Date().toISOString() },
+                    { id: 3, quoteId: 4, startDate: '2024-01-25', endDate: '2024-01-30', amount: 1800000, status: 'active', createdAt: new Date().toISOString() }
+                ];
+                localStorage.setItem('contracts', JSON.stringify(initialContracts));
+            }
+            
+            if (!localStorage.getItem('reviews')) {
+                const initialReviews = [
+                    { id: 1, contractId: 1, rating: 5, comment: '매우 만족스럽습니다. 전문성이 뛰어나고 일정을 잘 지켰습니다.', photos: [], createdAt: new Date().toISOString() },
+                    { id: 2, contractId: 2, rating: 4, comment: '전반적으로 좋았으나, 일부 디자인 수정이 필요했습니다.', photos: [], createdAt: new Date().toISOString() }
+                ];
+                localStorage.setItem('reviews', JSON.stringify(initialReviews));
+            }
+            
+            // 데이터 일치성 확인 및 수정
+            ensureDataConsistency();
+        }
+        
+        // 데이터 일치성 확인 및 수정
+        function ensureDataConsistency() {
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            const contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+            const reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+            
+            let hasChanges = false;
+            
+            // 계약 완료 시 관련 견적과 견적 요청도 완료로 변경
+            contracts.forEach(contract => {
+                if (contract.status === 'completed') {
+                    const quote = quotes.find(q => q.id === contract.quoteId);
+                    if (quote && quote.status !== 'completed') {
+                        quote.status = 'completed';
+                        hasChanges = true;
+                        
+                        const request = quoteRequests.find(q => q.id === quote.quoteRequestId);
+                        if (request && request.status !== 'completed') {
+                            request.status = 'completed';
+                        }
+                    }
+                }
+            });
+            
+            // 견적 완료 시 관련 견적 요청도 완료로 변경
+            quotes.forEach(quote => {
+                if (quote.status === 'completed') {
+                    const request = quoteRequests.find(q => q.id === quote.quoteRequestId);
+                    if (request && request.status !== 'completed') {
+                        request.status = 'completed';
+                        hasChanges = true;
+                    }
+                }
+            });
+            
+            // 변경된 데이터 저장
+            if (hasChanges) {
+                localStorage.setItem('quoteRequests', JSON.stringify(quoteRequests));
+                localStorage.setItem('quotes', JSON.stringify(quotes));
+                localStorage.setItem('contracts', JSON.stringify(contracts));
+            }
+            
+            return { quoteRequests, quotes, contracts, reviews };
+        }
+        
+        // 페이지 표시
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.getElementById(pageId).classList.add('active');
+            event.target.classList.add('active');
+            
+            // 후기 페이지 진입 시 자동으로 계약 목록 로드
+            if (pageId === 'my-reviews') {
+                loadAvailableContractsForReview();
+            }
+        }
+        
+        // 후기 작성 가능한 계약 목록 로드
+        function loadAvailableContractsForReview() {
+            const { quoteRequests, quotes, contracts, reviews } = ensureDataConsistency();
+            
+            // 완료된 계약 중 후기가 없는 계약만 필터링
+            const completedContractsWithoutReview = contracts.filter(c => 
+                c.status === 'completed' && !reviews.find(r => r.contractId === c.id)
+            );
+            
+            const select = document.getElementById('reviewContractId');
+            select.innerHTML = '<option value="">계약 선택</option>';
+            
+            completedContractsWithoutReview.forEach(contract => {
+                const quote = quotes.find(q => q.id === contract.quoteId);
+                const request = quote ? quoteRequests.find(q => q.id === quote.quoteRequestId) : null;
+                
+                const option = document.createElement('option');
+                option.value = contract.id;
+                option.textContent = `#${contract.id} - ${request ? request.category : '알 수 없음'} (₩${contract.amount.toLocaleString()})`;
+                select.appendChild(option);
+            });
+            
+            if (completedContractsWithoutReview.length === 0) {
+                const option = document.createElement('option');
+                option.textContent = '후기 작성 가능한 완료된 계약이 없습니다';
+                select.appendChild(option);
+                select.disabled = true;
+            } else {
+                select.disabled = false;
+            }
+        }
+        
+        // 공개/비공개 선택에 따른 비밀번호 필드 표시
+        document.getElementById('visibility').addEventListener('change', function() {
+            const passwordGroup = document.getElementById('passwordGroup');
+            if (this.value === 'private') {
+                passwordGroup.style.display = 'block';
+            } else {
+                passwordGroup.style.display = 'none';
+            }
+        });
+        
+        // 견적 요청 제출
+        function submitQuoteRequest() {
+            const customerName = document.getElementById('customerName').value;
+            const customerEmail = document.getElementById('customerEmail').value;
+            const category = document.getElementById('category').value;
+            const description = document.getElementById('description').value;
+            const budget = parseInt(document.getElementById('budget').value);
+            const deadline = document.getElementById('deadline').value;
+            const visibility = document.getElementById('visibility').value;
+            const accessPassword = document.getElementById('accessPassword').value;
+            
+            if (!customerName || !customerEmail || !description || !budget || !deadline) {
+                alert('모든 필드를 입력해주세요.');
+                return;
+            }
+            
+            if (visibility === 'private' && (!accessPassword || accessPassword.length !== 4 || !/^\d{4}$/.test(accessPassword))) {
+                alert('비공개 견적의 경우 4자리 숫자 비밀번호를 입력해주세요.');
+                return;
+            }
+            
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const newRequest = {
+                id: quoteRequests.length + 1,
+                customerName,
+                customerEmail,
+                category,
+                description,
+                budget,
+                deadline,
+                status: 'pending',
+                visibility: visibility,
+                accessPassword: visibility === 'private' ? accessPassword : null,
+                createdAt: new Date().toISOString()
+            };
+            
+            quoteRequests.push(newRequest);
+            localStorage.setItem('quoteRequests', JSON.stringify(quoteRequests));
+            
+            alert('견적 요청이 제출되었습니다!');
+            
+            // 폼 초기화
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerEmail').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('budget').value = '';
+            document.getElementById('deadline').value = '';
+            document.getElementById('accessPassword').value = '';
+            document.getElementById('visibility').value = 'public';
+            document.getElementById('passwordGroup').style.display = 'none';
+        }
+        
+        // 내 진행사항 검색
+        function searchMyProgress() {
+            const email = document.getElementById('searchEmail').value;
+            const { quoteRequests, quotes, contracts, reviews } = ensureDataConsistency();
+            
+            const myQuoteRequestIds = quoteRequests
+                .filter(q => q.customerEmail === email)
+                .map(q => q.id);
+            
+            const myQuotes = quotes.filter(q => myQuoteRequestIds.includes(q.quoteRequestId));
+            
+            // 내 견적 요청
+            const myQuoteRequests = quoteRequests.filter(q => q.customerEmail === email);
+            const quotesTableBody = document.getElementById('myQuotesTable');
+            quotesTableBody.innerHTML = '';
+            
+            myQuoteRequests.forEach(quote => {
+                const row = document.createElement('tr');
+                row.className = 'clickable-row';
+                row.innerHTML = `
+                    <td>#${quote.id}</td>
+                    <td>${quote.category}</td>
+                    <td><span class="visibility-badge visibility-${quote.visibility}">${quote.visibility === 'public' ? '공개' : '비공개'}</span></td>
+                    <td>${quote.description.substring(0, 15)}${quote.description.length > 15 ? '...' : ''}</td>
+                    <td>₩${quote.budget.toLocaleString()}</td>
+                    <td><span class="status-badge status-${quote.status}">${getStatusText(quote.status)}</span></td>
+                `;
+                row.onclick = () => {
+                    isAdmin = false;
+                    showQuoteDetail(quote.id);
+                };
+                quotesTableBody.appendChild(row);
+            });
+            
+            if (myQuoteRequests.length === 0) {
+                quotesTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">검색 결과가 없습니다.</td></tr>';
+            }
+            
+            // 계약된 견적
+            const contractedQuotes = myQuotes.filter(q => q.status === 'approved');
+            const contractedTableBody = document.getElementById('contractedQuotesTable');
+            contractedTableBody.innerHTML = '';
+            
+            contractedQuotes.forEach(quote => {
+                const request = quoteRequests.find(q => q.id === quote.quoteRequestId);
+                const contract = contracts.find(c => c.quoteId === quote.id);
+                const row = document.createElement('tr');
+                row.className = 'clickable-row';
+                row.innerHTML = `
+                    <td>#${quote.id}</td>
+                    <td>${request ? request.category : '알 수 없음'}</td>
+                    <td>₩${quote.price.toLocaleString()}</td>
+                    <td>${contract ? `${contract.startDate} ~ ${contract.endDate}` : '계약 미정'}</td>
+                    <td><span class="status-badge status-${quote.status}">${getStatusText(quote.status)}</span></td>
+                `;
+                row.onclick = () => {
+                    isAdmin = false;
+                    showQuoteDetail(quote.quoteRequestId);
+                };
+                contractedTableBody.appendChild(row);
+            });
+            
+            if (contractedQuotes.length === 0) {
+                contractedTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">계약된 견적이 없습니다.</td></tr>';
+            }
+            
+            // 완료된 계약 (후기 작성 가능)
+            const myContractIds = myQuotes.map(q => q.id);
+            const myCompletedContracts = contracts.filter(c => 
+                myContractIds.includes(c.quoteId) && c.status === 'completed'
+            );
+            
+            const completedContractsTableBody = document.getElementById('completedContractsForReview');
+            completedContractsTableBody.innerHTML = '';
+            
+            myCompletedContracts.forEach(contract => {
+                const quote = quotes.find(q => q.id === contract.quoteId);
+                const request = quote ? quoteRequests.find(q => q.id === quote.quoteRequestId) : null;
+                const existingReview = reviews.find(r => r.contractId === contract.id);
+                const reviewStatus = existingReview ? '작성 완료' : '작성 가능';
+                
+                const row = document.createElement('tr');
+                row.className = 'clickable-row';
+                row.innerHTML = `
+                    <td>#${contract.id}</td>
+                    <td>${request ? request.category : '알 수 없음'}</td>
+                    <td>${contract.endDate}</td>
+                    <td>₩${contract.amount.toLocaleString()}</td>
+                    <td>
+                        ${existingReview ? 
+                            `<span class="status-badge status-completed">${reviewStatus}</span>` : 
+                            `<button class="btn btn-primary" onclick="event.stopPropagation(); startReviewWithContract(${contract.id})">후기 작성</button>`
+                        }
+                    </td>
+                `;
+                completedContractsTableBody.appendChild(row);
+            });
+            
+            if (myCompletedContracts.length === 0) {
+                completedContractsTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">후기 작성 가능한 완료된 계약이 없습니다.</td></tr>';
+            }
+        }
+        
+        // 내 후기 검색
+        function searchMyReviews() {
+            const email = document.getElementById('searchReviewEmail').value;
+            const { quoteRequests, quotes, contracts, reviews } = ensureDataConsistency();
+            
+            const myQuoteRequestIds = quoteRequests
+                .filter(q => q.customerEmail === email)
+                .map(q => q.id);
+            
+            const myQuoteIds = quotes
+                .filter(q => myQuoteRequestIds.includes(q.quoteRequestId))
+                .map(q => q.id);
+            
+            const myContractIds = contracts
+                .filter(c => myQuoteIds.includes(c.quoteId))
+                .map(c => c.id);
+            
+            const myReviews = reviews.filter(r => myContractIds.includes(r.contractId));
+            
+            const tableBody = document.getElementById('myReviewsTable');
+            tableBody.innerHTML = '';
+            
+            myReviews.forEach(review => {
+                const contract = contracts.find(c => c.id === review.contractId);
+                const quote = contract ? quotes.find(q => q.id === contract.quoteId) : null;
+                const request = quote ? quoteRequests.find(q => q.id === quote.quoteRequestId) : null;
+                
+                const photoCount = review.photos ? review.photos.length : 0;
+                const photoInfo = photoCount > 0 ? `${photoCount}장` : '없음';
+                
+                const row = document.createElement('tr');
+                row.className = 'clickable-row';
+                row.innerHTML = `
+                    <td>${request ? request.category : '알 수 없음'}</td>
+                    <td>${'★'.repeat(review.rating)}</td>
+                    <td>${review.comment.substring(0, 15)}${review.comment.length > 15 ? '...' : ''}</td>
+                    <td>${photoInfo}</td>
+                    <td>${new Date(review.createdAt).toLocaleDateString('ko-KR')}</td>
+                `;
+                row.onclick = () => showReviewDetail(review.id);
+                tableBody.appendChild(row);
+            });
+            
+            if (myReviews.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">검색 결과가 없습니다.</td></tr>';
+            }
+            
+            // 완료된 계약 목록 업데이트
+            loadCompletedContractsForReview(email);
+        }
+        
+        // 완료된 계약 목록 로드 (후기 작성용)
+        function loadCompletedContractsForReview(email) {
+            const { quoteRequests, quotes, contracts, reviews } = ensureDataConsistency();
+            
+            const myQuoteRequestIds = quoteRequests
+                .filter(q => q.customerEmail === email)
+                .map(q => q.id);
+            
+            const myQuoteIds = quotes
+                .filter(q => myQuoteRequestIds.includes(q.quoteRequestId))
+                .map(q => q.id);
+            
+            const myCompletedContracts = contracts.filter(c => 
+                myQuoteIds.includes(c.quoteId) && c.status === 'completed'
+            );
+            
+            const tableBody = document.getElementById('completedContractsTable');
+            tableBody.innerHTML = '';
+            
+            myCompletedContracts.forEach(contract => {
+                const quote = quotes.find(q => q.id === contract.quoteId);
+                const request = quote ? quoteRequests.find(q => q.id === quote.quoteRequestId) : null;
+                const existingReview = reviews.find(r => r.contractId === contract.id);
+                const reviewStatus = existingReview ? '작성 완료' : '작성 가능';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>#${contract.id}</td>
+                    <td>${request ? request.category : '알 수 없음'}</td>
+                    <td>${contract.endDate}</td>
+                    <td>₩${contract.amount.toLocaleString()}</td>
+                    <td>
+                        ${existingReview ? 
+                            `<span class="status-badge status-completed">${reviewStatus}</span>` : 
+                            `<button class="btn btn-primary" onclick="startReviewWithContract(${contract.id})">후기 작성</button>`
+                        }
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            if (myCompletedContracts.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">후기 작성 가능한 완료된 계약이 없습니다.</td></tr>';
+            }
+        }
+        
+        // 계약 선택 (후기 작성용)
+        function selectContractForReview(contractId) {
+            startReviewWithContract(contractId);
+        }
+        
+        // 후기 작성 시작 (자동 데이터 입력)
+        function startReviewWithContract(contractId) {
+            const { quoteRequests, quotes, contracts } = ensureDataConsistency();
+            
+            const contract = contracts.find(c => c.id === contractId);
+            const quote = contract ? quotes.find(q => q.id === contract.quoteId) : null;
+            const request = quote ? quoteRequests.find(q => q.id === quote.quoteRequestId) : null;
+            
+            if (!contract || !quote || !request) {
+                alert('계약 정보를 찾을 수 없습니다.');
+                return;
+            }
+            
+            // 페이지 전환
+            showPage('my-reviews');
+            
+            // 계약 ID 자동 선택
+            setTimeout(() => {
+                document.getElementById('reviewContractId').value = contractId;
+                
+                // 기본 평점 5점 설정
+                selectedRating = 5;
+                updateStars();
+                
+                // 기본 후기 내용 자동 입력
+                const defaultComment = `${request.category} 프로젝트에 대한 후기입니다. ${request.category} 작업은 전반적으로 만족스러웠습니다. 전문성이 뛰어나고 일정을 잘 지켰습니다. 다음에도 이용하고 싶습니다.`;
+                document.getElementById('reviewComment').value = defaultComment;
+                
+                // 후기 작성 폼으로 스크롤
+                document.querySelector('.review-form').scrollIntoView({ behavior: 'smooth' });
+                
+                // 사진 업로드 영역 활성화 시각적 피드백
+                const photoSection = document.querySelector('.photo-upload-section');
+                if (photoSection) {
+                    photoSection.classList.add('highlight');
+                    setTimeout(() => {
+                        photoSection.classList.remove('highlight');
+                    }, 2000);
+                }
+            }, 100);
+        }
+        
+        // 후기 작성
+        function submitReview() {
+            const contractId = parseInt(document.getElementById('reviewContractId').value);
+            const rating = selectedRating;
+            const comment = document.getElementById('reviewComment').value;
+            
+            if (!contractId || !comment) {
+                alert('계약 ID와 후기 내용을 입력해주세요.');
+                return;
+            }
+            
+            const reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+            const newReview = {
+                id: reviews.length + 1,
+                contractId,
+                rating,
+                comment,
+                photos: uploadedPhotos,
+                createdAt: new Date().toISOString()
+            };
+            
+            reviews.push(newReview);
+            localStorage.setItem('reviews', JSON.stringify(reviews));
+            
+            alert('후기가 작성되었습니다!');
+            
+            // 폼 초기화
+            document.getElementById('reviewContractId').value = '';
+            document.getElementById('reviewComment').value = '';
+            selectedRating = 5;
+            uploadedPhotos = [];
+            updateStars();
+            updatePhotoPreview();
+        }
+        
+        // 사진 업로드 처리
+        function handlePhotoUpload(event) {
+            const files = event.target.files;
+            const remainingSlots = MAX_PHOTOS - uploadedPhotos.length;
+            
+            if (files.length > remainingSlots) {
+                alert(`최대 ${MAX_PHOTOS}장까지 업로드 가능합니다. 남은 슬롯: ${remainingSlots}장`);
+                return;
+            }
+            
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const photoData = {
+                            id: Date.now() + Math.random(),
+                            data: e.target.result,
+                            name: file.name,
+                            description: ''
+                        };
+                        uploadedPhotos.push(photoData);
+                        updatePhotoPreview();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // 파일 입력 초기화
+            event.target.value = '';
+        }
+        
+        // 사진 미리보기 업데이트
+        function updatePhotoPreview() {
+            const container = document.getElementById('photoUploadContainer');
+            const counter = document.getElementById('photoCounter');
+            
+            // 기존 내용 제거 (추가 버튼 제외)
+            const addBtn = document.createElement('div');
+            addBtn.className = 'photo-preview';
+            addBtn.onclick = () => document.getElementById('photoInput').click();
+            addBtn.innerHTML = '<span class="add-icon">+</span>';
+            
+            container.innerHTML = '';
+            
+            // 업로드된 사진 표시
+            uploadedPhotos.forEach((photo, index) => {
+                const photoDiv = document.createElement('div');
+                photoDiv.className = 'photo-preview';
+                photoDiv.innerHTML = `
+                    <img src="${photo.data}" alt="${photo.name}">
+                    <button class="remove-btn" onclick="removePhoto(${index})">×</button>
+                    <input type="text" class="photo-description" placeholder="설명 입력" value="${photo.description}" onchange="updatePhotoDescription(${index}, this.value)">
+                `;
+                container.appendChild(photoDiv);
+            });
+            
+            // 추가 버튼 다시 추가
+            if (uploadedPhotos.length < MAX_PHOTOS) {
+                container.appendChild(addBtn);
+            }
+            
+            // 카운터 업데이트
+            counter.textContent = `${uploadedPhotos.length}/${MAX_PHOTOS}장`;
+        }
+        
+        // 사진 제거
+        function removePhoto(index) {
+            uploadedPhotos.splice(index, 1);
+            updatePhotoPreview();
+        }
+        
+        // 사진 설명 업데이트
+        function updatePhotoDescription(index, description) {
+            uploadedPhotos[index].description = description;
+        }
+        
+        // 후기 상세보기
+        function showReviewDetail(reviewId) {
+            const reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+            const contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+            const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            
+            const review = reviews.find(r => r.id === reviewId);
+            if (!review) {
+                alert('후기를 찾을 수 없습니다.');
+                return;
+            }
+            
+            const contract = contracts.find(c => c.id === review.contractId);
+            const quote = contract ? quotes.find(q => q.id === contract.quoteId) : null;
+            const request = quote ? quoteRequests.find(q => q.id === quote.quoteRequestId) : null;
+            
+            let photosHTML = '';
+            if (review.photos && review.photos.length > 0) {
+                photosHTML = `
+                    <div class="detail-section">
+                        <div class="detail-section-title">첨부 사진 (${review.photos.length}장)</div>
+                        <div class="photo-grid">
+                            ${review.photos.map(photo => `
+                                <div class="photo-item">
+                                    <img src="${photo.data}" alt="${photo.name}">
+                                    <div class="photo-desc">${photo.description || '설명 없음'}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                photosHTML = `
+                    <div class="detail-section">
+                        <div class="detail-section-title">첨부 사진</div>
+                        <div class="detail-row">
+                            <div class="detail-label">사진:</div>
+                            <div class="detail-value">없음</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            const detailHTML = `
+                <div class="detail-content">
+                    <div class="detail-section">
+                        <div class="detail-section-title">후기 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">후기 ID:</div>
+                            <div class="detail-value">#${review.id}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">계약 ID:</div>
+                            <div class="detail-value">#${review.contractId}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">프로젝트:</div>
+                            <div class="detail-value">${request ? request.category : '알 수 없음'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">고객명:</div>
+                            <div class="detail-value">${request ? request.customerName : '알 수 없음'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">평점:</div>
+                            <div class="detail-value">${'★'.repeat(review.rating)}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">작성일:</div>
+                            <div class="detail-value">${new Date(review.createdAt).toLocaleString('ko-KR')}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <div class="detail-section-title">후기 내용</div>
+                        <div class="detail-row">
+                            <div class="detail-label">내용:</div>
+                            <div class="detail-value">${review.comment}</div>
+                        </div>
+                    </div>
+                    
+                    ${photosHTML}
+                </div>
+            `;
+            
+            document.getElementById('detailModalBody').innerHTML = detailHTML;
+            document.getElementById('detailModal').classList.add('active');
+        }
+        
+        // 별점 클릭 이벤트
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.dataset.rating);
+                document.getElementById('rating').value = selectedRating;
+                updateStars();
+            });
+        });
+        
+        function updateStars() {
+            document.querySelectorAll('.star').forEach(star => {
+                const rating = parseInt(star.dataset.rating);
+                if (rating <= selectedRating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+        
+        // 상태 텍스트 변환
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': '대기',
+                'approved': '승인',
+                'rejected': '거절',
+                'completed': '완료'
+            };
+            return statusMap[status] || status;
+        }
+        
+        // 견적 상세 보기
+        function showQuoteDetail(quoteId) {
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            const request = quoteRequests.find(q => q.id === quoteId);
+            
+            if (!request) {
+                alert('견적을 찾을 수 없습니다.');
+                return;
+            }
+            
+            // 비공개 견적이고 관리자가 아닌 경우 비밀번호 확인
+            if (request.visibility === 'private' && !isAdmin) {
+                currentAccessQuoteId = quoteId;
+                document.getElementById('passwordModal').classList.add('active');
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+                return;
+            }
+            
+            // 상세 정보 표시
+            displayQuoteDetail(request, quotes);
+        }
+        
+        // 비밀번호 확인
+        function verifyPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const quoteRequests = JSON.parse(localStorage.getItem('quoteRequests')) || [];
+            const request = quoteRequests.find(q => q.id === currentAccessQuoteId);
+            
+            if (!request) {
+                alert('견적을 찾을 수 없습니다.');
+                closePasswordModal();
+                return;
+            }
+            
+            if (request.accessPassword === password) {
+                closePasswordModal();
+                const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+                displayQuoteDetail(request, quotes);
+            } else {
+                alert('비밀번호가 일치하지 않습니다.');
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+        
+        // 견적 상세 정보 표시
+        function displayQuoteDetail(request, quotes) {
+            const relatedQuote = quotes.find(q => q.quoteRequestId === request.id);
+            
+            const detailHTML = `
+                <div class="detail-content">
+                    <div class="detail-section">
+                        <div class="detail-section-title">기본 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적 ID:</div>
+                            <div class="detail-value">#${request.id}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">고객명:</div>
+                            <div class="detail-value">${request.customerName}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">이메일:</div>
+                            <div class="detail-value">${request.customerEmail}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">카테고리:</div>
+                            <div class="detail-value">${request.category}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">공개 여부:</div>
+                            <div class="detail-value">
+                                <span class="visibility-badge visibility-${request.visibility}">
+                                    ${request.visibility === 'public' ? '공개' : '비공개'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <div class="detail-section-title">프로젝트 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">설명:</div>
+                            <div class="detail-value">${request.description}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">예산:</div>
+                            <div class="detail-value">₩${request.budget.toLocaleString()}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">마감일:</div>
+                            <div class="detail-value">${request.deadline}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">상태:</div>
+                            <div class="detail-value">
+                                <span class="status-badge status-${request.status}">
+                                    ${getStatusText(request.status)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${relatedQuote ? `
+                    <div class="detail-section">
+                        <div class="detail-section-title">견적서 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적가:</div>
+                            <div class="detail-value">₩${relatedQuote.price.toLocaleString()}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적 설명:</div>
+                            <div class="detail-value">${relatedQuote.description}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">견적 상태:</div>
+                            <div class="detail-value">
+                                <span class="status-badge status-${relatedQuote.status}">
+                                    ${getStatusText(relatedQuote.status)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="detail-section">
+                        <div class="detail-section-title">시스템 정보</div>
+                        <div class="detail-row">
+                            <div class="detail-label">요청일:</div>
+                            <div class="detail-value">${new Date(request.createdAt).toLocaleString('ko-KR')}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('detailModalBody').innerHTML = detailHTML;
+            document.getElementById('detailModal').classList.add('active');
+        }
+        
+        // 상세 모달 닫기
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+        
+        // 비밀번호 모달 닫기
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+            currentAccessQuoteId = null;
+        }
+        
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+        
+        // 비밀번호 입력에서 엔터키 처리
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyPassword();
+            }
+        });
+        
+        // 모달 외부 클릭 시 닫기
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDetailModal();
+            }
+        });
+        
+        document.getElementById('passwordModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePasswordModal();
+            }
+        });
+        
+        // 페이지 로드 시 데이터베이스 초기화
+        window.onload = function() {
+            initDatabase();
+            updateStars();
+        };
+    </script>
+</body>
+</html>
